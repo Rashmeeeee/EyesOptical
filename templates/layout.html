@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" type="text/css" href="../static/css/theme.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/general.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/style.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/nav-style.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/slider.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/checkout.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/try-on.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>EyesOptical</title>
+	
+</head>
+<body>
+    <section class="nav-bar">
+		<section class="section-container flex-box flex-centered top-bar-container">
+			
+				<span class="nav-logo"><img src="../static/images/logoo.png"></span>
+			
+            
+			<button class="menu-btn"><i class="fa fa-navicon"></i></button>
+			 <span class="nav-bar-items flex-box justify-content-start">
+				<a href="/home"><span class="nav-item nav-current">Home</span></a>
+				<!--<a href="/adminlogin"><span class="nav-item">Admin</span></a>-->
+
+			</span>
+			 <div class="search-area flex-box justify-content-start">
+				<!--<span class="nav-bar-search flex-box flex-centered">
+					<i class="fa fa-search" aria-hidden="true"></i>
+					<input type="search" placeholder="Search..." value="" name="s" autocomplete="off">
+				</span>
+				<a href="submitpage.html">-->
+				{% if request.endpoint != 'checkout' and request.endpoint != 'detail' %}
+                    <a href="{{ url_for('user_logout') }}" class="submit-btn" id="logout-btn"><i class="fa fa-submit">Logout</i></a>
+				</a>
+                 {% endif %}
+                  <div class="search-area flex-box justify-content-start">
+                   
+    
+   {% if request.endpoint != 'checkout' and request.endpoint != 'detail' %}
+                    <a href="{{ url_for('login') }}" class="submit-btn" id="login-btn"><i class="fa fa-user-plus">Login</i></a>
+                    {% endif %}
+			</div> 
+            </div> 
+		</section>
+	</section>
+	
+	{% with messages=get_flashed_messages(with_categories=true) %}
+	{% if messages%}
+		{% for category,message in messages %}
+			<div class="alert alert-{{ category }} m-4">
+				{{message}}
+			</div>
+		{% endfor %}
+	{% endif %}
+	{% endwith %}
+	
+    {% block content %}{%endblock%}
+    <div class="line"></div>
+
+    <section class="section-container footer flex-box">
+        <div class="footer-image-area">
+            <img src="../static/images/logoo.png">
+        </div>
+        <div class="footer-text-area flex-box flex-centered">
+            <div class="footer-texts">
+                <span class="footer-nav-heading">Designed & Developed By Rashmi</span>
+            <h3 class="footer-nav-subheading">Discover best Eyewares with Live Fit Test</h3>
+            <div class="social-icons">
+                <img src="https://figmaelements.com/wp-content/uploads/2019/11/facebook-figmaelements.svg">
+                <img src="https://figmaelements.com/wp-content/uploads/2019/11/twitter-figmaelements.svg">
+                <img src="https://figmaelements.com/wp-content/uploads/2019/11/instagram-figmaelements.svg">
+            </div>
+            </div>
+        </div>
+    </section>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function() {
+        $("#SnapshotButton").click(function() {
+            console.log("hello world");
+            $.ajax({
+                url: "/snapshot",
+                type: "GET",
+                dataType: "json",
+                success: function(response) {
+                    location.reload();
+
+
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>
+<script>
+    // Check authentication status on page load
+    $(document).ready(function() {
+        const isAuthenticated = {{ current_user.is_authenticated | tojson }};
+        
+        if (isAuthenticated) {
+            $('#login-btn').hide(); // Hide login button
+            $('#logout-btn').show(); // Show logout button
+        } else {
+            $('#login-btn').show(); // Show login button
+            $('#logout-btn').hide(); // Hide logout button
+        }
+
+        // Optional: If you want to handle AJAX logout
+        $('#logout-btn').click(function(event) {
+            event.preventDefault(); // Prevent default action
+            $.ajax({
+                url: "{{ url_for('user_logout') }}",
+                type: "POST",
+                success: function(response) {
+                    // On success, refresh the page or redirect
+                    location.reload(); // Reload to update button status
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>
+
+</html>

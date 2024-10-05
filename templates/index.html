@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block content %}
+<div id="slider">
+	<figure>
+		<img src="{{ url_for('static', filename='images/slider/slide2.webp') }}" alt>
+	<img src="{{ url_for('static', filename='images/slider/slide4.avif') }}" alt>
+	<img src="{{ url_for('static', filename='images/slider/slide1.webp') }}" alt>
+	<img src="{{ url_for('static', filename='images/slider/slide3.jpg') }}" alt>
+	
+	</figure>
+	</div>
+		<section class="latest">
+			<section class="section-container">
+				<h1 class="primary-heading">
+					Best Sellers
+				</h1>
+				<div class="grid">
+					{% for product in products %}
+					
+						<a href="/detail/{{product.id}}">
+							<div class="grid-item">
+								<div class="grid-img">
+									<img src="{{product.images}}">
+								</div>
+								<div class="grid-text">
+									<p class="primary-grid-heading">{{product.name}}</p>
+									
+									<p class="primary-grid-price-tag">RS{{product.price}}</b>
+								</div>
+							</div>
+						</a>
+					{% endfor %}
+					
+				</div>
+	
+				<div class="line"></div>
+			</section>
+		</section>
+		<section class="section-container">
+			<div class="elements-box flex-box flex-centered flex-wrap">
+			<div class="element-box-text-area">
+				<img src="../static/images/logoo.png">
+				<h3 class="main-small-text">Discover the best Eyewares with live fit test.</h3>
+			</div>
+			<button class="submit-btn unhided-btn">Get In Touch</button>
+			</div>
+		</section>
+{% endblock %}

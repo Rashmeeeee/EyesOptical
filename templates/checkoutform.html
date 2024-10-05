@@ -1,0 +1,110 @@
+{% extends "layout.html" %}
+{% block content%}
+<section class="checkout-section section-container d-flex detail-container justify-content-between">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Checkout</legend>
+    
+            <div class="form-group mb-2">
+                {{form.email.label(class="form-label")}}
+                
+                {% if form.email.errors %}
+                    {{form.email(class="form-control is-invalid")}}
+                    <div class="invalid-feedback">
+                        {% for error in form.email.errors %}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{form.email(class="form-control ")}}
+                {% endif %}
+                
+            </div>
+            <div class="form-group mb-2">
+                {{form.firstname.label(class="form-label")}}
+                {% if form.firstname.errors %}
+                    {{ form.firstname(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.firstname.errors %}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{form.firstname(class="form-control")}}
+                {% endif %}
+            </div>
+            <div class="form-group mb-2">
+                {{form.lastname.label(class="form-label")}}
+                {% if form.lastname.errors %}
+                    {{form.lastname(class="form-control is-invalid")}}
+                    <div class="invalid-feedback">
+                        {% for error in form.lastname.errors %}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{form.lastname(class="form-control")}}
+                {% endif %}
+            </div>
+            <div class="form-group mb-2">
+                {{form.streetaddress.label(class="form-label")}}
+                {% if form.streetaddress.errors %}
+                    {{form.streetaddress(class="form-control is-invalid")}}
+                    <div class="invalid-feedback">
+                        {% for error in form.streetaddress.errors %}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{form.streetaddress(class="form-control")}}
+                {% endif %}
+               
+            </div>
+            <div class="form-group mb-2">
+                {{form.city.label(class="form-label")}}
+                {% if form.city.errors %}
+                    {{form.city(class="form-control is-invalid")}}
+                    <div class="invalid-feedback">
+                        {% for error in form.city.errors %}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{form.city(class="form-control")}}
+                {% endif %}
+               
+            </div>
+            <div class="form-group mb-2">
+                {{form.country.label(class="form-label")}}
+                {{form.country(class="form-select")}}
+            </div>
+            <div class="form-group">
+                {{form.phone.label(class="form-label")}}
+                
+                
+                {% if form.phone.errors %}
+                    {{form.phone(class="form-control is-invalid")}}
+                    <div class="invalid-feedback">
+                        {% for error in form.phone.errors %}
+                            <span>{{error}}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{form.phone(class="form-control")}}
+                {% endif %}
+
+               
+            </div>
+        </fieldset>
+        <div class="form-group mt-4">
+            {{form.submit(class="submit-btn button")}}
+        </div>
+    </form>
+    <div class="checkout-product ms-4 border p-4 ">
+        <img src="{{product.images}}" alt="" class="product-detail-image">
+        <p class="detail-title ">{{product.name}}</p>
+        <p class="detail-price">RS {{product.price}}</b>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" type="text/css" href="../static/css/theme.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/general.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/style.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/nav-style.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/slider.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/checkout.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/try-on.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Chasmaghar</title>
+	
+</head>
+<body>
+    <section class="nav-bar">
+		<section class="section-container flex-box flex-centered top-bar-container">
+			<a href="/home">
+				<span class="nav-logo"><img src="../static/images/logoo.png"></span>
+			</a>
+			<button class="menu-btn"><i class="fa fa-navicon"></i></button>
+			
+		</section>
+	</section>
+<section  class="section-container flex-box detail-container justify-content-center align-items-center tryon-products">
+    <div class="try-products">
+        {% for product in products %}
+					
+						<a href="/tryglass/{{product.id}}">
+							<div class="try-grid-item flex-box">
+								<div class="try-grid-img">
+									<img src="{{product.images}}">
+								</div>
+								<div class="grid-text try-grid-text">
+									<p class="primary-grid-heading">{{product.name}}</p>
+									<!-- <p class="primary-grid-subheading">March 24,2021</p>
+									 -->
+									<p class="primary-grid-price-tag">RS{{product.price}}</b>
+								</div>
+							</div>
+						</a>
+					{% endfor %}
+    </div>
+   <div class="video-container">
+    <div class="flex-box detail-actions hidden" id="try-success" >
+        <p></p>
+        <a href="/checkout/{{id}}"><button class="submit-btn margin-right-16" data-product-id="{{ id }}">Buy Now</button></a>
+    </div>
+    <div class="flex-box detail-actions hidden" id="try-failed">
+        <p></p>
+    <a href="/checkout/{{id}}"><button class="submit-btn margin-right-16" data-product-id="{{ id }}">Buy Now</button></a></div>
+    <div id="video">
+        <img  src="{{url_for('video')}}" class="destory"/>
+    </div>
+
+    <center>
+
+            <button name="Snapshot" id="SnapshotButton"><img src="/static/camera.png" width="25" height="25"></button>
+  </center>
+   </div> 
+        
+   
+   <div class="snaps-container">
+
+    {% for snap in images %}
+				
+        <div class="snap-box flex-box">
+            <img src="{{snap}}">
+        </div>
+    
+{% endfor %}
+   </div> 
+   
+</section>
+<div class="line"></div>
+
+    <section class="section-container footer flex-box">
+        <div class="footer-image-area">
+            <img src="../static/images/logoo.png">
+        </div>
+        <div class="footer-text-area flex-box flex-centered">
+            <div class="footer-texts">
+                <span class="footer-nav-heading">Designed & Developed By Rashmi</span>
+            <h3 class="footer-nav-subheading">Discover best Eyewares with Live Fit Test</h3>
+            <div class="social-icons">
+                <img src="https://figmaelements.com/wp-content/uploads/2019/11/facebook-figmaelements.svg">
+                <img src="https://figmaelements.com/wp-content/uploads/2019/11/twitter-figmaelements.svg">
+                <img src="https://figmaelements.com/wp-content/uploads/2019/11/instagram-figmaelements.svg">
+            </div>
+            </div>
+        </div>
+    </section>
+</body>
+<style>
+    .modal-content {
+        border-radius: 10px; /* Rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    }
+
+    .modal-header {
+        background-color: #36a59f; /* Header background color */
+        color: white; /* Header text color */
+    }
+
+    .modal-body {
+        font-size: 16px; /* Font size */
+        color: black; /* Message text color */
+    }
+
+    .modal-footer .btn {
+        background-color: #36a59f; /* Same color as header */
+        color: white; /* Button text color */
+        border-radius: 5px; /* Rounded button corners */
+        transition: background-color 0.3s; /* Smooth background color transition */
+    }
+
+    .modal-footer .btn:hover {
+        background-color: #28a745; /* Change background color on hover */
+    }
+
+    .modal-footer .btn-secondary {
+        background-color: transparent; /* Optional: Transparent for secondary button */
+        color: #36a59f; /* Match color for the secondary button text */
+    }
+
+    .modal-footer .btn-secondary:hover {
+        background-color: rgba(54, 165, 159, 0.1); /* Lighten on hover */
+    }
+</style>
+
+
+<div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-labelledby="loginRequiredModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginRequiredModalLabel">Login Required</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                You must be logged in to proceed to checkout. Please log in to continue.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="/login" class="btn btn-primary">Log In</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+$(document).ready(function() {
+    $('.submit-btn').click(function(event) {
+        event.preventDefault(); // Prevent default action
+
+        {% if not current_user.is_authenticated %}
+            // Show the modal if the user is not logged in
+            $('#loginRequiredModal').modal('show');
+        {% else %}
+            // Redirect to checkout if logged in
+            const productId = $(this).data('product-id'); // Assuming you have product-id data attribute
+            window.location.href = "/checkout/" + productId;
+        {% endif %}
+    });
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function() {
+        $("#SnapshotButton").click(function() {
+            console.log("hello world");
+            $.ajax({
+                url: "/snapshot",
+                type: "GET",
+                dataType: "json",
+                success: function(response) {
+                    location.reload();
+
+
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+    const guideSuccess = document.getElementById("try-success");
+    const guideFailed = document.getElementById("try-failed");
+   
+
+    setInterval(() => {
+        fetch("{{ url_for('emotion_feed') }}")
+        .then(response => {
+                response.text().then(resp => {
+                    if (resp === "suggest") {
+                        guideSuccess.classList.remove('hidden');
+                        guideFailed.classList.add('hidden');
+
+                    }
+                    if (resp === "change") {
+                        guideSuccess.classList.add('hidden');
+                        guideFailed.classList.remove('hidden');
+
+                    }
+                    if(resp === "none"){
+                        guideSuccess.classList.add('hidden');
+                        guideFailed.classList.add('hidden');
+                        
+                    }
+                })
+            });
+        }, 5000);
+</script>
+
+
+</html>
+
+

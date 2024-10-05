@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="section-container flex-box detail-container">
+    <div class="margin-right-16">
+        <img src="{{product.images}}" alt="" class="product-detail-image">
+    </div>
+    <div>
+        <p class="detail-title">{{product.name}}</p>
+        <p class="detail-price">RS {{product.price}}</p>
+            
+        <div class="line"></div>
+        <div class="flex-box detail-actions">
+            <!-- Buy Now Button -->
+            <button class="submit-btn margin-right-16" data-product-id="{{ product.id }}">Buy Now</button>
+
+            <!-- Try Glasses Button -->
+            <a href="/tryglass/{{product.id}}"><button class="try-btn">Try Glasses</button></a>
+        </div>
+
+        <p class="detail-title">Details</p>
+        <p>
+            {{product.detail}}
+        </p>
+    </div>
+</section>
+
+<!-- Modal for Login Required -->
+<div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-labelledby="loginRequiredModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginRequiredModalLabel">Login Required</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                You must be logged in to proceed to checkout. Please log in to continue.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="/login" class="btn btn-primary">Log In</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Styling for Modal -->
+<style>
+    .modal-content {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .modal-header {
+        background-color: #36a59f;
+        color: white;
+    }
+    .modal-body {
+        font-size: 16px;
+        color: black;
+    }
+    .modal-footer .btn {
+        background-color: #36a59f;
+        color: white;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+    .modal-footer .btn:hover {
+        background-color: #28a745;
+    }
+</style>
+
+<!-- Script to Handle Buy Now Button Click -->
+<script>
+$(document).ready(function() {
+    $('.submit-btn').click(function(event) {
+        event.preventDefault(); // Prevent default action
+        
+        {% if not current_user.is_authenticated %}
+            // Show the modal if the user is not logged in
+            $('#loginRequiredModal').modal('show');
+        {% else %}
+            // Redirect to checkout if logged in
+            const productId = $(this).data('product-id');
+            window.location.href = "/checkout/" + productId;
+        {% endif %}
+    });
+});
+</script>
+{% endblock %}

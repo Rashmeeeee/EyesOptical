@@ -1,0 +1,34 @@
+
+
+{% extends "adminlayout.html" %}
+{% block content%}
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Order Number</th>
+      <th scope="col">First Name</th>
+      <th scope="col">Last Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Address</th>
+      <th scope="col">Phone</th>
+      <th scope="col">Product Id</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    {% for order in orders %}
+    
+      <tr>
+          <th scope="row">{{order.id}}</th>
+          <td>{{order.firstname}}</td>
+          <td>{{order.lastname}}</td>
+          <td>{{order.email}}</td>
+          <td>{{order.streetaddress}} {{order.city}} {{order.country}}</td>
+          <td>{{order.phone}}</td>
+          <td>{{order.product}}</td>
+      </tr>
+{% endfor %}
+    
+  </tbody>
+</table>
+{% endblock %}

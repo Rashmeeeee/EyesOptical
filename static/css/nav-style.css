@@ -1,0 +1,282 @@
+.top-bar {
+	background-color: var(--primary-color);
+}
+
+.top-bar-container {
+	justify-content: space-between !important;
+}
+
+.top-icon {
+	border-right: 1px solid #F1F1F1;
+}
+
+.top-bar-text {
+	color: var(--secondary-color);
+	font-size: 14px;
+}
+
+.top-bar-logo img {
+	height: inherit;
+	width: 116px;
+	z-index: 20;
+	padding-left: 24px;
+}
+
+.nav-bar {
+	background-color: #36a59f;
+	/* Transparent yellow */
+	padding: 24px;
+}
+
+.nav-item {
+	line-height: 1.5;
+	font-size: 15px;
+	padding: 8px;
+}
+
+.nav-bar-items {
+	width: 55%;
+	margin-left: 16px;
+}
+
+.nav-logo {
+	width: 15%;
+}
+
+.nav-logo img {
+	width: 146px;
+}
+
+.nav-bar-search {
+	border: solid 1px;
+	border-color: rgba(255, 255, 255, .3);
+}
+
+.nav-bar-search i {
+	padding-left: 20px;
+}
+
+.nav-bar-search input,
+.nav-bar-search input:focus {
+	font-size: 16px;
+	color: rgba(255, 255, 255, .77);
+	background-color: rgba(0, 0, 0, 0);
+	border: none;
+	padding: 11px 8px;
+	outline: none;
+}
+
+
+.menu-btn {
+	display: none;
+}
+
+@media (max-width: 1024px) {
+	.section-container {
+		max-width: 1025px;
+		padding: 0 24px;
+	}
+
+	.nav-bar-search {
+		display: none;
+	}
+
+	.nav-bar-items {
+		display: none;
+	}
+
+	.submit-btn {
+		display: none;
+	}
+
+	.menu-btn {
+		display: block;
+		margin-left: auto;
+	}
+
+	.nav-logo {
+		width: 50%;
+	}
+
+	.nav-logo img {
+		width: 188px;
+	}
+
+	.main-area .section-container {
+		flex-direction: column;
+	}
+
+	.text-area {
+		margin-bottom: 5vh;
+		width: auto;
+		text-align: center;
+		margin-right: 0;
+	}
+
+	.image-area {
+		justify-content: center;
+		width: 100%;
+	}
+
+	.text-area .search-area {
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.unhided-btn {
+		display: flex;
+		width: 100%;
+	}
+
+	.text-area .nav-bar-search {
+		justify-content: flex-start;
+	}
+
+	.text-area .submit-btn {
+		justify-content: center;
+	}
+}
+
+@media (max-width: 767px) {
+	/* Add styles if needed */
+}
+
+@media (max-width: 600px) {
+	.top-bar {
+		display: none;
+	}
+}
+.nav-bar-items a[href="/home"] .nav-item,
+.nav-bar-items a[href="/adminlogin"] .nav-item {
+	color: #fff;
+	/* White font */
+	position: relative;
+	padding: 12px 25px;
+	text-transform: uppercase;
+	font-weight: 500;
+	font-size: 16px;
+	transition: all 0.3s ease;
+	/* Smooth transition */
+	overflow: hidden;
+	letter-spacing: 1px;
+}
+
+/* Shiny text effect */
+.nav-bar-items a[href="/home"] .nav-item:hover,
+.nav-bar-items a[href="/adminlogin"] .nav-item:hover {
+	color: #fff;
+	background-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 100%);
+	background-size: 200% 100%;
+	background-position: 0 0;
+	animation: shine 1s forwards;
+}
+
+/* Keyframe for the shiny effect */
+@keyframes shine {
+	0% {
+		background-position: -200% 0;
+	}
+
+	100% {
+		background-position: 200% 0;
+	}
+}
+
+/* Shorter and glowing slider */
+.nav-bar-items a[href="/home"] .nav-item::before,
+.nav-bar-items a[href="/adminlogin"] .nav-item::before {
+	content: '';
+	position: absolute;
+	width: 50%;
+	/* Shorter slider */
+	height: 3px;
+	background: linear-gradient(90deg, transparent, #fff, transparent);
+	/* Glowing slider */
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	transition: all 0.3s ease;
+	opacity: 0;
+	/* Initially hidden */
+}
+
+/* Hover effect to show slider */
+.nav-bar-items a[href="/home"] .nav-item:hover::before,
+.nav-bar-items a[href="/adminlogin"] .nav-item:hover::before {
+	opacity: 1;
+	width: 70%;
+	/* Slider expands slightly on hover */
+	background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
+	/* Glowing */
+}
+
+/* For touch/click effect */
+.nav-bar-items a[href="/home"]:active .nav-item,
+.nav-bar-items a[href="/adminlogin"]:active .nav-item {
+	transform: translateY(2px);
+	/* Slight push-down effect */
+}
+.submit-btn {
+	display: flex;
+	justify-content: center;
+	margin-left: 8px;
+	position: relative;
+	padding: 12px 25px;
+	text-transform: uppercase;
+	font-weight: 500;
+	font-size: 16px;
+	color: #fff;
+	background-color: #36a59f;
+	/* Same color as nav-bar */
+	border: none;
+	cursor: pointer;
+	overflow: hidden;
+	transition: all 0.3s ease;
+	letter-spacing: 1px;
+}
+
+/* Shiny effect on hover */
+.submit-btn:hover {
+	background-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 100%);
+	background-size: 200% 100%;
+	background-position: 0 0;
+	animation: shine 1s forwards;
+	color: #fff;
+}
+
+/* Keyframe for shiny effect */
+@keyframes shine {
+	0% {
+		background-position: -200% 0;
+	}
+
+	100% {
+		background-position: 200% 0;
+	}
+}
+
+/* Shiny and glowing border on hover */
+.submit-btn::before {
+	content: '';
+	position: absolute;
+	width: 100%;
+	height: 3px;
+	background: linear-gradient(90deg, transparent, #fff, transparent);
+	bottom: 0;
+	left: 0;
+	transform: scaleX(0);
+	transition: all 0.3s ease;
+	opacity: 0;
+}
+
+.submit-btn:hover::before {
+	opacity: 1;
+	transform: scaleX(1);
+	background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
+}
+
+/* Slight push-down effect on click */
+.submit-btn:active {
+	transform: translateY(2px);
+}

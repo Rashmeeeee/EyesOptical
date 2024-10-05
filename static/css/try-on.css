@@ -1,0 +1,67 @@
+.tryon-products{
+    height: 80vh;
+}
+
+.try-products{
+    height: inherit;
+    overflow-y: auto;
+    margin-right: 16px;
+}
+.video-container{
+    width: 90%;
+    height: inherit;
+}
+
+#video{
+    height: 90%;
+    margin-bottom: 16px;
+}
+
+.try-grid-item{
+    height: 100px;
+    background-color: var(--primary-color);
+	margin:10px;
+	border-radius: 6px;
+}
+.try-grid-img{
+    padding: 8px;
+    border-radius: 6px;
+    width: 30%;
+    object-fit: cover;
+    display: flex;
+}
+
+.try-grid-img img{
+        max-width: 100%;
+        object-fit: contain;
+    }
+
+    .try-grid-text{
+        width: 70%;
+
+    }
+
+.try-grid-text{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.snaps-container{
+    height: inherit;
+    overflow-y: auto;
+}
+
+.snap-box{
+    height: 200px;
+    background-color: var(--primary-color);
+	margin:10px;
+	border-radius: 6px;
+}
+
+.snap-box img{
+    border-radius: 6px;
+    height: inherit;
+    width: 100%;
+    object-fit: cover;
+}

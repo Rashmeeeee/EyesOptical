@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css?family=Rubik&display=swap');
+
+
+:root{
+	--primary-color: #fff;
+	--secondary-color:#36a59f;
+	--text-color:#fff;
+	--main-font: "Rubik",Sans-serrif;
+	--inactive-color:#adadad;
+	--btn-color:#f85606;
+}
