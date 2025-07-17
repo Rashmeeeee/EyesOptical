@@ -5,16 +5,58 @@
         <img src="{{product.images}}" alt="" class="product-detail-image">
     </div>
     <div>
-        <p class="detail-title">{{product.name}}</p>
-        <p class="detail-price">RS {{product.price}}</p>
+       
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.cart-form').forEach(function(form) {
+                var minus = form.querySelector('.minus');
+                var plus = form.querySelector('.plus');
+                var input = form.querySelector('.qty-input');
+                var warning = form.querySelector('#qty-warning');
+                minus.addEventListener('click', function() {
+                    let val = parseInt(input.value);
+                    if (val > 1) input.value = val - 1;
+                    if (warning) warning.style.display = 'none';
+                });
+                plus.addEventListener('click', function() {
+                    let val = parseInt(input.value);
+                    if (val < 5) {
+                        input.value = val + 1;
+                        if (warning) warning.style.display = 'none';
+                    } else {
+                        if (warning) warning.style.display = 'block';
+                    }
+                });
+                form.addEventListener('submit', function(e) {
+                    let val = parseInt(input.value);
+                    if (val > 5) {
+                        if (warning) warning.style.display = 'block';
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+        </script>
             
         <div class="line"></div>
-        <div class="flex-box detail-actions">
+        <p class="detail-title">{{product.name}}</p>
+        <p class="detail-price">RS {{product.price}}</p>
+        <div class="flex-box detail-actions align-items-center" style="gap: 12px;">
             <!-- Buy Now Button -->
-            <button class="submit-btn margin-right-16" data-product-id="{{ product.id }}">Buy Now</button>
-
+            <a href="{{ url_for('buynow', id=product.id) }}" class="submit-btn margin-right-16" id="buy-now-btn">Buy Now</a>
             <!-- Try Glasses Button -->
             <a href="/tryglass/{{product.id}}"><button class="try-btn">Try Glasses</button></a>
+            <!-- Add to Cart Form (quantity selector above Add to Cart) -->
+            <form method="POST" action="{{ url_for('add_to_cart') }}" class="cart-form ms-4" style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; margin: 0; padding: 0;">
+                <div style="display: flex; align-items: center; margin-bottom: 4px; gap: 4px;">
+                    <button type="button" class="qty-btn minus" style="color: #fff; background: none; border: none; font-size: 1.1rem; width: 22px; height: 22px;">–</button>
+                    <input type="text" name="quantity" class="qty-input" value="1" readonly style="width: 28px; text-align: center; background: none; color: #fff; border: none; font-size: 1rem; margin: 0 4px;" />
+                    <button type="button" class="qty-btn plus" style="color: #fff; background: none; border: none; font-size: 1.1rem; width: 22px; height: 22px;">+</button>
+                </div>
+                <input type="hidden" name="product_id" value="{{ product.id }}" />
+                <button type="submit" class="submit-btn" style="margin-top: 0;">Add to Cart</button>
+                <div id="qty-warning" style="display:none; color: red; font-size: 0.9rem; margin-top: 4px;">You can't select more than five.</div>
+            </form>
         </div>
 
         <p class="detail-title">Details</p>
@@ -37,7 +79,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <a href="/login" class="btn btn-primary">Log In</a>
+                <a href="/login" id="modalLoginButton" class="btn btn-primary">Log In</a>
             </div>
         </div>
     </div>
@@ -66,23 +108,54 @@
     .modal-footer .btn:hover {
         background-color: #28a745;
     }
+    .qty-btn {
+        color: #fff;
+        background: none;
+        border: none;
+        font-size: 1.1rem;
+        width: 22px;
+        height: 22px;
+        line-height: 22px;
+        padding: 0;
+        cursor: pointer;
+    }
+    .qty-input {
+        background: none;
+        color: #fff;
+        border: none;
+        font-size: 1rem;
+        width: 28px;
+        text-align: center;
+    }
+    .buy-now-btn-fix {
+        padding: 8px 18px !important;
+        height: auto !important;
+        min-height: unset !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+    .btn-same-size {
+        padding: 14px 20px !important;
+        font-size: 16px !important;
+        border-radius: 2px !important;
+        min-width: 120px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: auto !important;
+        min-height: unset !important;
+    }
 </style>
 
 <!-- Script to Handle Buy Now Button Click -->
 <script>
-$(document).ready(function() {
-    $('.submit-btn').click(function(event) {
-        event.preventDefault(); // Prevent default action
-        
-        {% if not current_user.is_authenticated %}
-            // Show the modal if the user is not logged in
-            $('#loginRequiredModal').modal('show');
-        {% else %}
-            // Redirect to checkout if logged in
-            const productId = $(this).data('product-id');
-            window.location.href = "/checkout/" + productId;
-        {% endif %}
+    $(document).ready(function() {
+        $('#buy-now-btn').click(function(event) {
+            {% if not current_user.is_authenticated %}
+                event.preventDefault();
+                $('#loginRequiredModal').modal('show');
+            {% endif %}
+        });
     });
-});
 </script>
 {% endblock %}

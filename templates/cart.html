@@ -1,0 +1,133 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Your Cart</h2>
+    {% if products %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in products %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.qty }}</td>
+                    <td>Rs {{ item.product.price }}</td>
+                    <td>Rs {{ item.product.price * item.qty }}</td>
+                    <td>
+                        <form method="POST" action="/remove_from_cart" style="display:inline;">
+                            <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h4>Grand Total: Rs {{ total }}</h4>
+        <a href="{{ url_for('checkout') }}" class="btn btn-primary" id="proceed-checkout-btn">Proceed to Checkout</a>
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+</div>
+<!-- Modal for Login Required -->
+<div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-labelledby="loginRequiredModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginRequiredModalLabel">Login Required</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                You must be logged in to proceed to checkout. Please log in to continue.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="/login" id="modalLoginButton" class="btn btn-primary">Log In</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Styling for Modal -->
+<style>
+    .modal-content {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .modal-header {
+        background-color: #36a59f;
+        color: white;
+    }
+    .modal-body {
+        font-size: 16px;
+        color: black;
+    }
+    .modal-footer .btn {
+        background-color: #36a59f;
+        color: white;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+    .modal-footer .btn:hover {
+        background-color: #28a745;
+    }
+    .qty-btn {
+        color: #fff;
+        background: none;
+        border: none;
+        font-size: 1.1rem;
+        width: 22px;
+        height: 22px;
+        line-height: 22px;
+        padding: 0;
+        cursor: pointer;
+    }
+    .qty-input {
+        background: none;
+        color: #fff;
+        border: none;
+        font-size: 1rem;
+        width: 28px;
+        text-align: center;
+    }
+    .buy-now-btn-fix {
+        padding: 8px 18px !important;
+        height: auto !important;
+        min-height: unset !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+    .btn-same-size {
+        padding: 14px 20px !important;
+        font-size: 16px !important;
+        border-radius: 2px !important;
+        min-width: 120px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: auto !important;
+        min-height: unset !important;
+    }
+</style>
+
+<!-- Script to Handle Buy Now Button Click -->
+<script>
+    $(document).ready(function() {
+        $('#proceed-checkout-btn').click(function(event) {
+            {% if not current_user.is_authenticated %}
+                event.preventDefault();
+                $('#loginRequiredModal').modal('show');
+            {% endif %}
+        });
+    });
+</script>
+{% endblock %}
+
+

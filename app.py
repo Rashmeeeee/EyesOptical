@@ -17,16 +17,51 @@ from login import LoginForm, SignupForm
 from flask_login import LoginManager, UserMixin, current_user, login_user, logout_user, login_required
 from flask_bcrypt import Bcrypt
 from flask_bcrypt import generate_password_hash, check_password_hash
-
+import torch
+from model import NeuralNet
+from nltk_utils import bag_of_words, tokenize
+import random
+import requests
+import time
 import json
+from flask import session
+
+# Load environment variables
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    print("python-dotenv not installed. Install with: pip install python-dotenv")
 
 from camera import Camera
 app = Flask(__name__)
+# Load chatbot model
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+with open('intents.json', 'r') as json_data:
+    intents = json.load(json_data)
+
+FILE = "data.pth"
+data = torch.load(FILE)
+
+input_size = data["input_size"]
+hidden_size = data["hidden_size"]
+output_size = data["output_size"]
+all_words = data['all_words']
+tags = data['tags']
+model_state = data["model_state"]
+
+model = NeuralNet(input_size, hidden_size, output_size).to(device)
+model.load_state_dict(model_state)
+model.eval()
+
+bot_name = "Sam"
+
 app.config['SECRET_KEY'] = "de9e5b220476ba0aba47040eb9b2fea9"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///chasmaghar.db'
 bcrypt = Bcrypt(app)
 login_mananger = LoginManager(app)
-login_mananger.login_view = 'adminlogin'
+login_mananger.login_view = 'login'
 login_mananger.login_view = 'login'
 login_mananger.login_message_category = "info"
 
@@ -73,33 +108,168 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"User({self.id}{self.firstname},{self.email},{self.password})"
+# Khalti Configuration
+# Get your actual Khalti API credentials from: https://khalti.com/merchant/account/apikey/
+# For development, you can use test credentials
+# For production, use live credentials
 
+# IMPORTANT: You need to replace these with real Khalti API credentials
+# The current values are placeholders and will cause "Invalid token" errors
+# KHALTI_TEST_PUBLIC_KEY = os.environ.get('KHALTI_PUBLIC_KEY', "test_public_key_dc74e0fd57cb46cd93832aee0a390234")
+# KHALTI_TEST_SECRET_KEY = os.environ.get('KHALTI_SECRET_KEY', "test_secret_key_...")  # Replace with your actual secret key
+# KHALTI_VERIFY_URL = "https://khalti.com/api/v2/payment/verify/"
+
+# For testing purposes, you can temporarily use these test credentials:
+# KHALTI_TEST_PUBLIC_KEY = "test_public_key_dc74e0fd57cb46cd93832aee0a390234"
+# KHALTI_TEST_SECRET_KEY = "test_secret_key_..."  # This needs to be a real secret key
+
+# @app.route('/initiate-khalti', methods=['POST'])
+# def initiate_khalti():
+#     try:
+#         product_id = request.form.get('product_id')
+#         product = Product.query.get(product_id)
+        
+#         if not product:
+#             return jsonify({"success": False, "message": "Product not found"}), 404
+
+#         # Check if we're using placeholder credentials
+#         if KHALTI_TEST_SECRET_KEY == "test_secret_key_...":
+#             return jsonify({
+#                 "success": False, 
+#                 "message": "Khalti API credentials not configured. Please set up real Khalti API credentials. See KHALTI_SETUP.md for instructions."
+#             }), 400
+
+#         payload = {
+#             "return_url": url_for('payment_success', _external=True),
+#             "website_url": url_for('home', _external=True),
+#             "amount": product.price * 100,  # Convert to paisa
+#             "purchase_order_id": f"order_{int(time.time())}",
+#             "purchase_order_name": product.name,
+#             "customer_info": {
+#                 "name": request.form.get('firstname') + " " + request.form.get('lastname'),
+#                 "email": request.form.get('email'),
+#                 "phone": request.form.get('phone')
+#             }
+#         }
+        
+#         headers = {
+#             "Authorization": f"Key {KHALTI_TEST_SECRET_KEY}",
+#             "Content-Type": "application/json"
+#         }
+        
+#         response = requests.post(
+#             "https://a.khalti.com/api/v2/epayment/initiate/",
+#             json=payload,
+#             headers=headers
+#         )
+        
+#         if response.status_code == 200:
+#             return jsonify({
+#                 "success": True,
+#                 "payment_url": response.json()['payment_url']
+#             })
+        
+#         # Handle specific error cases
+#         error_detail = response.json().get('detail', 'Payment initiation failed')
+#         if "Invalid token" in error_detail:
+#             return jsonify({
+#                 "success": False,
+#                 "message": "Invalid Khalti API credentials. Please check your KHALTI_SECRET_KEY configuration."
+#             }), 400
+        
+#         return jsonify({
+#             "success": False,
+#             "message": error_detail
+#         }), 400
+        
+#     except Exception as e:
+#         return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/payment/success')
+def payment_success():
+    # This endpoint is called by Khalti after successful payment
+    # You can add logic here to handle the success callback
+    return render_template('payment_success.html')
+
+@app.route('/payment/verify', methods=['POST'])
+def verify_payment():
+    try:
+        # Get the pidx from the callback (Khalti sends this after payment)
+        pidx = request.form.get('pidx')
+        if not pidx:
+            return jsonify({"success": False, "message": "Missing pidx parameter"}), 400
+
+        # Verify payment with Khalti
+        response = requests.post(
+            KHALTI_VERIFY_URL,
+            data={"pidx": pidx},
+            headers={"Authorization": f"Key {KHALTI_TEST_SECRET_KEY}"},
+            timeout=10
+        )
+
+        response_data = response.json()
+        
+        if response.status_code == 200:
+            # Payment was successful - create order
+            # Note: In a real implementation, you might want to store order details in session
+            # or pass them through the return_url as parameters
+            
+            # For now, we'll create a basic order with available data
+            order = Order(
+                firstname=response_data.get('user', {}).get('name', '').split(' ')[0] or 'Customer',
+                lastname=' '.join(response_data.get('user', {}).get('name', '').split(' ')[1:]) or 'Name',
+                email=response_data.get('user', {}).get('email', 'customer@example.com'),
+                phone=response_data.get('user', {}).get('mobile', '0000000000'),
+                streetaddress=request.form.get('streetaddress', 'N/A'),
+                city=request.form.get('city', 'N/A'),
+                country=request.form.get('country', 'Nepal'),
+                product=request.form.get('product_id', 1)  # Default to product ID 1 if not provided
+            )
+            db.session.add(order)
+            db.session.commit()
+            
+            return jsonify({
+                "success": True,
+                "message": "Payment verified successfully",
+                "data": response_data
+            })
+        else:
+            return jsonify({
+                "success": False,
+                "message": response_data.get('detail', 'Payment verification failed'),
+                "khalti_response": response_data
+            }), 400
+            
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": f"Verification error: {str(e)}",
+            "error_type": type(e).__name__
+        }), 500
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    form = LoginForm()  # Instantiate your form here
+    form = LoginForm()
+    next_page = request.args.get('next')
     if form.validate_on_submit():
-        # Fetch the user by email
         user = User.query.filter_by(email=form.email.data).first()
-
-        # Check if the user exists and the password matches
         if user and check_password_hash(user.password, form.password.data):
-
-            # Check if the user is an admin
-            if user.isSuperAdmin:
-                flash('Admins should use the admin login page.', 'danger')
-                # Redirect to admin login
-                return redirect(url_for('adminlogin'))
-
-            # Log in the regular user
             login_user(user, remember=True)
-            return redirect(url_for('home'))
+            next_post = request.form.get('next')
+            if next_post and next_post.startswith('/'):
+                return redirect(next_post)
+            elif next_page and next_page.startswith('/'):
+                return redirect(next_page)
+            else:
+                return redirect(url_for('home'))
         else:
             flash('Login unsuccessful. Please check email and password.', 'danger')
+    return render_template('login.html', form=form, next=next_page)
 
-    # Pass the form to the template
-    return render_template('login.html', form=form)
 
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
 
 @app.route("/signup", methods=["GET", "POST"])
@@ -158,19 +328,49 @@ def detail(id):
     return render_template("detail.html", product=product)
 
 
+
+@app.route("/checkout", methods=['GET', 'POST'])
 @login_required
-@app.route("/checkout/<int:id>", methods=['GET', 'POST'])
-def checkout(id):
-    product = db.session.query(Product).get(id)
+def checkout():
+    cart = get_cart()
+    products = []
+    total = 0
+    to_remove = []
+    for pid, qty in cart.items():
+        product = Product.query.get(int(pid))
+        try:
+            qty = int(qty)
+            price = int(product.price)
+        except (ValueError, TypeError):
+            to_remove.append(pid)
+            continue
+        if product:
+            products.append({'product': product, 'qty': qty})
+            total += price * qty
+    for pid in to_remove:
+        del cart[pid]
+    session['cart'] = cart
+
     form = CheckoutForm()
     if form.validate_on_submit():
-        flash("Order Successful", category="success")
-        order = Order(firstname=request.form["firstname"], lastname=request.form["lastname"], email=request.form["email"], phone=request.form["phone"],
-                      streetaddress=request.form["streetaddress"], city=request.form["city"], country=request.form["country"], product=product.id)
-        db.session.add(order)
+        # Save an order for each product in the cart
+        for item in products:
+            order = Order(
+                firstname=form.firstname.data,
+                lastname=form.lastname.data,
+                email=form.email.data,
+                phone=form.phone.data,
+                streetaddress=form.streetaddress.data,
+                city=form.city.data,
+                country=form.country.data,
+                product=item['product'].id
+            )
+            db.session.add(order)
         db.session.commit()
+        session['cart'] = {}
+        flash("Order Successful", category="success")
         return redirect(url_for('home'))
-    return render_template("checkoutform.html", form=form, product=product)
+    return render_template("checkoutform.html", form=form, products=products, total=total)
 
 
 def saveProductImage(form_picture, file_name):
@@ -273,6 +473,7 @@ def videobyid(id):
     return
 
 
+
 @app.route('/video')
 def video():
 
@@ -316,13 +517,12 @@ def admin_logout():
     return redirect(url_for('adminlogin'))
 
 
-@app.route("/user_logout", methods=["POST"])
+@app.route('/user_logout', methods=['GET', 'POST'])
 @login_required
 def user_logout():
-    print(f"User {current_user.email} logging out.")
     logout_user()
     print("User logged out.")
-    return jsonify(success=True)
+    return redirect(url_for('home'))
 
 
 @login_mananger.user_loader
@@ -366,6 +566,156 @@ def emotion_feed():
             print("Suggest Result : ", resp)
             yield resp
     return Response(generate(), mimetype='text')
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    user_input = request.get_json().get("message")
+    if not user_input:
+        return jsonify({"response": "I didn't understand that."})
+
+    sentence = tokenize(user_input)
+    X = bag_of_words(sentence, all_words)
+    X = X.reshape(1, X.shape[0])
+    X = torch.from_numpy(X).to(device)
+
+    output = model(X)
+    _, predicted = torch.max(output, dim=1)
+    tag = tags[predicted.item()]
+    probs = torch.softmax(output, dim=1)
+    prob = probs[0][predicted.item()]
+
+    if prob.item() > 0.75:
+        for intent in intents["intents"]:
+            if tag == intent["tag"]:
+                return jsonify({"response": random.choice(intent["responses"])})
+
+    return jsonify({"response": "I'm not sure how to respond to that."})
+
+
+def get_cart():
+    if 'cart' not in session:
+        session['cart'] = {}
+    return session['cart']
+
+@app.route('/add_to_cart', methods=['POST'])
+def add_to_cart():
+    product_id = request.form.get('product_id')
+    quantity = request.form.get('quantity', 1)
+    try:
+        quantity = int(quantity)
+    except (ValueError, TypeError):
+        flash('Invalid quantity.', 'danger')
+        return redirect(request.referrer or url_for('home'))
+    product = Product.query.get(product_id)
+    try:
+        price = int(product.price)
+    except (ValueError, TypeError):
+        flash('Invalid product price.', 'danger')
+        return redirect(request.referrer or url_for('home'))
+    buy_now = request.form.get('buy_now')
+    if not product_id:
+        flash('No product selected.', 'danger')
+        return redirect(request.referrer or url_for('home'))
+    if quantity < 1:
+        quantity = 1
+    if quantity > 5:
+        quantity = 5
+    cart = get_cart()
+    cart[product_id] = quantity
+    session['cart'] = cart
+    flash('Product added/updated in cart!', 'success')
+    if buy_now:
+        return redirect(url_for('checkout'))
+    else:
+        return redirect(url_for('detail', id=product_id))
+
+@app.route('/cart', methods=['GET', 'POST'])
+def cart():
+    cart = get_cart()
+    products = []
+    total = 0
+    to_remove = []  # List to keep track of bad product ids
+
+    for pid, qty in cart.items():
+        product = Product.query.get(int(pid))
+        try:
+            qty = int(qty)
+            price = int(product.price)
+        except (ValueError, TypeError):
+            to_remove.append(pid)  # Mark this product for removal
+            continue
+        if product:
+            products.append({'product': product, 'qty': qty})
+            total += price * qty
+
+    # Remove any bad items from the cart session
+    for pid in to_remove:
+        del cart[pid]
+    session['cart'] = cart
+    if request.method == 'POST':
+        # Handle checkout logic here (same form as add_to_cart)
+        # You can process the order, clear the cart, etc.
+        flash('Order placed successfully!', 'success')
+        session['cart'] = {}
+        return redirect(url_for('home'))
+    return render_template('cart.html', products=products, total=total)
+
+@app.route('/remove_from_cart', methods=['POST'])
+def remove_from_cart():
+    product_id = request.form.get('product_id')
+    cart = get_cart()
+    if product_id in cart:
+        del cart[product_id]
+        session['cart'] = cart
+        flash('Item removed from cart.', 'success')
+    return redirect(url_for('cart'))
+
+@app.route('/buynow/<int:id>', methods=['GET', 'POST'])
+@login_required
+def buynow(id):
+    product = Product.query.get_or_404(id)
+    form = CheckoutForm()
+    if form.validate_on_submit():
+        # Save order for this product only
+        order = Order(
+            firstname=form.firstname.data,
+            lastname=form.lastname.data,
+            email=form.email.data,
+            phone=form.phone.data,
+            streetaddress=form.streetaddress.data,
+            city=form.city.data,
+            country=form.country.data,
+            product=product.id
+        )
+        db.session.add(order)
+        db.session.commit()
+        flash("Order Successful", category="success")
+        return redirect(url_for('home'))
+    # Pass a single product as a list for template compatibility
+    return render_template("checkoutform.html", form=form, products=[{'product': product, 'qty': 1}], total=product.price)
+
+@app.route("/checkout/<int:id>", methods=['GET', 'POST'])
+def checkout_single(id):
+    product = Product.query.get_or_404(id)
+    form = CheckoutForm()
+    if form.validate_on_submit():
+        # Save order for this product only
+        order = Order(
+            firstname=form.firstname.data,
+            lastname=form.lastname.data,
+            email=form.email.data,
+            phone=form.phone.data,
+            streetaddress=form.streetaddress.data,
+            city=form.city.data,
+            country=form.country.data,
+            product=product.id
+        )
+        db.session.add(order)
+        db.session.commit()
+        flash("Order Successful", category="success")
+        return redirect(url_for('home'))
+    # Pass a single product as a list for template compatibility
+    return render_template("checkoutform.html", form=form, products=[{'product': product, 'qty': 1}], total=product.price)
 
 
 if __name__ == "__main__":

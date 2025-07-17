@@ -5,3 +5,34 @@
 .checkout-product{
     height: fit-content;
 }
+.payment-method-container {
+    display: flex;
+    align-items: center; /* Vertically center items */
+    justify-content: center; /* Horizontally center the group */
+    gap: 10px; /* Space between text and button */
+    margin-bottom: 15px;
+}
+
+.payment-method-text {
+    font-size: 16px; 
+    color: #fff; 
+    font-weight: 500; 
+    font: "Rubik",Sans-serrif;
+}
+
+.khalti-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.khalti-btn:hover {
+    transform: scale(1.05);
+}
+
+.khalti-img {
+    width: 160px; /* Adjust as needed */
+    height: auto;
+}

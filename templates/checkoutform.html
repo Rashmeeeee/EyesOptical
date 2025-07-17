@@ -97,14 +97,62 @@
                
             </div>
         </fieldset>
+        <div class="form-group mt-4 text-center">
+   <div class="payment-method-container">
+        <span class="payment-method-text">Payment Method:</span>
+        <button type="button" id="khalti-payment-button" class="khalti-btn">
+            <img src="{{ url_for('static', filename='images/khalti.png') }}" alt="Pay with Khalti" class="khalti-img">
+        </button>
+    </div>
+</div>
+
         <div class="form-group mt-4">
             {{form.submit(class="submit-btn button")}}
         </div>
     </form>
-    <div class="checkout-product ms-4 border p-4 ">
-        <img src="{{product.images}}" alt="" class="product-detail-image">
-        <p class="detail-title ">{{product.name}}</p>
-        <p class="detail-price">RS {{product.price}}</b>
+    <div class="checkout-products-list" style="display: flex; flex-direction: column; gap: 16px;">
+    {% for item in products %}
+        <div class="checkout-product ms-4 border p-4 ">
+            <img src="{{ item.product.images }}" alt="" style="height: 80px; width: auto; object-fit: contain; margin-bottom: 8px;">
+            <p class="detail-title ">{{ item.product.name }}</p>
+            <p class="detail-price">RS {{ item.product.price }}</p>
+            <p>Quantity: {{ item.qty }}</p>
+            <p>Total: RS {{ item.product.price * item.qty }}</p>
+        </div>
+    {% endfor %}
     </div>
 </section>
+<script src="https://khalti.com/static/khalti-checkout.js"></script>
+<script>
+    var config = {
+        "publicKey": "test_public_key_dc74e0fd57cb46cd93832aee0a390234", // paste your key here
+        "productIdentity": "123456",
+        "productName": "Test Product",
+        "productUrl": "http://localhost/",
+        "paymentPreference": [
+            "KHALTI",
+            "EBANKING",
+            "MOBILE_BANKING",
+            "CONNECT_IPS",
+            "SCT",
+        ],
+        "eventHandler": {
+            onSuccess(payload) {
+                alert("Payment successful! Token: " + payload.token);
+            },
+            onError(error) {
+                alert("Payment failed: " + JSON.stringify(error));
+            },
+            onClose() {
+                console.log('Widget is closing');
+            }
+        }
+    };
+    var checkout = new KhaltiCheckout(config);
+    var btn = document.getElementById("khalti-payment-button");
+    btn.onclick = function () {
+        checkout.show({amount: 1000});
+    }
+</script>
+
 {% endblock %}

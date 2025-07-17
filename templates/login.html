@@ -79,8 +79,9 @@
                     </div>
                 {% endif %}
             {% endwith %}
-            <form method="POST" action="{{ url_for('login') }}">
+            <form id="modalLoginForm" method="POST" action="{{ url_for('login') }}">
                 {{ form.hidden_tag() }}
+                <input type="hidden" name="next" value="">
                 <div class="form-group">
                     {{ form.email.label }}<br>
                     {{ form.email(class="form-control") }}<br>
@@ -102,5 +103,15 @@
             <p>Don't have an account? <a href="{{ url_for('signup') }}">Create one here</a></p>
         </div>
     </div>
+
+    <script>
+        $('#modalLoginForm').submit(function() {
+            const pendingCheckout = localStorage.getItem('pending_checkout');
+            if (pendingCheckout) {
+                $('input[name="next"]').val(pendingCheckout);
+                localStorage.removeItem('pending_checkout');
+            }
+        });
+    </script>
 </body>
 </html>

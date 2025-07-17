@@ -336,6 +336,7 @@ button{
 .footer-text-area img{
 	width: 20%;
 	padding-right: 2vw;
+	pointer-events: none;
 }
 
 .copyright{

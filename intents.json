@@ -1,0 +1,306 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "Hi",
+        "Hello",
+        "Hey there",
+        "Good day",
+        "Is anyone there?",
+        "Howdy",
+        "What's up?",
+        "Yo!",
+        "Hey, can you help me?",
+        "How are you?"
+      ],
+      "responses": [
+        "Hey there! Welcome to EyesOptical.",
+        "Hi! How can I help you choose your perfect pair of glasses today?",
+        "Hello! Need help picking the right frame?",
+        "Hey! I'm here to assist you with eyewear shopping."
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "Bye",
+        "Goodbye",
+        "See you later",
+        "Catch you later",
+        "Talk to you soon",
+        "Thanks, bye!",
+        "I'm done here",
+        "Bye now",
+        "That's all for now",
+        "Peace out"
+      ],
+      "responses": [
+        "Goodbye! Thanks for visiting EyesOptical.",
+        "See you soon. Don't forget to protect your eyes! 😎",
+        "Bye! Have a stylish day!",
+        "Catch you later, and happy glasses shopping!"
+      ]
+    },
+    {
+      "tag": "order_status",
+      "patterns": [
+        "Where's my order?",
+        "Can I track my glasses?",
+        "Order status?",
+        "Track my order",
+        "I want to check my order",
+        "Has my order been shipped?",
+        "What’s the delivery status?",
+        "Is my order on the way?",
+        "Check delivery status",
+        "Can you check my order progress?"
+      ],
+      "responses": [
+        "Sure! Please provide your order ID to check the status.",
+        "I'd be happy to help. Can you give me your order number?",
+        "Let's track that down! What's your order ID?",
+        "Please share the email or order number to check your status."
+      ]
+    },
+    {
+      "tag": "returns_policy",
+      "patterns": [
+        "Can I return the glasses?",
+        "What's your return policy?",
+        "Do you offer refunds?",
+        "How do I return a product?",
+        "Is return available?",
+        "I need to return my purchase",
+        "Your return procedure?",
+        "Refunds available?",
+        "Return terms?",
+        "Is the return free?"
+      ],
+      "responses": [
+        "Yes, we offer easy 7-day returns! Please visit our return policy page for details.",
+        "You can return items within 7 days if they're in original condition.",
+        "Sure! Visit your profile > Orders > Return to initiate a return.",
+        "Yes, we offer refunds on eligible products. Let me guide you."
+      ]
+    },
+    {
+      "tag": "frame_suggestion",
+      "patterns": [
+        "Which frame suits my face?",
+        "Suggest glasses for a round face",
+        "What suits an oval face?",
+        "Help me choose frames",
+        "What type of glasses would fit my face?",
+        "Face shape suggestion",
+        "Can you help with style matching?",
+        "Which shape should I try?",
+        "Best frame for square face?",
+        "I need style advice"
+      ],
+      "responses": [
+        "Round face? Go for rectangular or square frames!",
+        "Oval faces suit almost all frame shapes!",
+        "Let’s find the perfect match for you — want to try the virtual try-on?"
+      ]
+    },
+    {
+      "tag": "lens_options",
+      "patterns": [
+        "Do you have blue light lenses?",
+        "Can I get anti-glare coating?",
+        "Tell me about lens types",
+        "What lens should I choose?",
+        "Do you offer progressive lenses?",
+        "I want prescription lenses",
+        "Do you provide lens power input?",
+        "Can I order just the lens?",
+        "What coatings are available?",
+        "Any UV protection lenses?"
+      ],
+      "responses": [
+        "Yes! We offer blue light, anti-glare, photochromic, and more.",
+        "You can choose coatings and lens type during checkout.",
+        "Need help selecting the right lens? I’m here to guide you!",
+        "We offer prescription, progressive, and standard lenses."
+      ]
+    },
+    {
+      "tag": "payment_methods",
+      "patterns": [
+        "What payment options are there?",
+        "Do you accept PayPal?",
+        "Can I pay with card?",
+        "Is cash on delivery available?",
+        "How do I pay?",
+        "Payment options?",
+        "Do you accept credit cards?",
+        "Is UPI supported?",
+        "Can I pay in installments?",
+        "Can I use digital wallet?"
+      ],
+      "responses": [
+        "We accept cards, PayPal, UPI, and COD in select locations.",
+        "You can pay via Visa, MasterCard, and more. All payments are secure.",
+        "Yes! We support digital wallets and online banking too.",
+        "Pay the way you like — we support multiple payment modes."
+      ]
+    },
+    {
+      "tag": "virtual_tryon",
+      "patterns": [
+        "Can I try glasses virtually?",
+        "How does the virtual try-on work?",
+        "Try before I buy?",
+        "Do you offer virtual try-on?",
+        "Can I see how it looks on me?",
+        "Where is the try-on tool?",
+        "How to try glasses on my face?",
+        "Can I use AR to try frames?",
+        "Try-on with camera?",
+        "Do you have virtual fitting?"
+      ],
+      "responses": [
+        "Absolutely! Use our virtual try-on tool — just turn on your camera!",
+        "Yes! Click on any product and hit 'Try On'.",
+        "Try before you buy — use our virtual mirror now!",
+        "Upload a photo or use live camera to try your frames!"
+      ]
+    },
+    {
+      "tag": "support",
+      "patterns": [
+        "I need help",
+        "Talk to support",
+        "How can I reach customer care?",
+        "I have an issue",
+        "Can someone assist me?",
+        "Need help with my order",
+        "Your contact info?",
+        "Is there a support email?",
+        "Help me!",
+        "Chat with support"
+      ],
+      "responses": [
+        "Sure! You can email us at support@eyesoptical.com or use this chat.",
+        "We’re here to help! Tell me what the issue is.",
+        "Need assistance? I’m all ears!",
+        "You can reach us directly or continue chatting here."
+      ]
+    },
+    {
+      "tag": "product_inquiry",
+      "patterns": [
+        "What brands do you have?",
+        "Show me men's glasses",
+        "Do you have blue frames?",
+        "What are your best sellers?",
+        "Can I see new arrivals?",
+        "Show me sunglasses",
+        "Do you have kids' glasses?",
+        "What is the price range?",
+        "Are there any discounts?"
+      ],
+      "responses": [
+        "We have a wide range of brands and styles! What are you looking for?",
+        "You can browse our best sellers and new arrivals on the home page.",
+        "Yes, we have frames for men, women, and kids. Use the filters to narrow your search.",
+        "Check out our latest discounts and offers on the home page!"
+      ]
+    },
+    {
+      "tag": "order_modification",
+      "patterns": [
+        "Can I change my order?",
+        "How do I update my address?",
+        "Can I add another product to my order?",
+        "I want to cancel my order",
+        "How do I edit my order?"
+      ],
+      "responses": [
+        "To modify or cancel your order, please contact our support team as soon as possible.",
+        "You can update your address in your profile before the order is shipped.",
+        "For changes to your order, reach out to us via chat or email."
+      ]
+    },
+    {
+      "tag": "shipping_info",
+      "patterns": [
+        "How long does delivery take?",
+        "What are your shipping charges?",
+        "Do you deliver outside Kathmandu?",
+        "Is there free shipping?",
+        "Can I track my shipment?",
+        "When will my order arrive?"
+      ],
+      "responses": [
+        "Delivery usually takes 2-5 business days within Kathmandu.",
+        "Shipping charges depend on your location and order amount.",
+        "We offer free shipping on orders above a certain amount. Check our shipping policy for details.",
+        "You can track your shipment using the order status feature."
+      ]
+    },
+    {
+      "tag": "prescription_help",
+      "patterns": [
+        "How do I upload my prescription?",
+        "Can I order without a prescription?",
+        "What is PD?",
+        "Do you offer lens fitting?",
+        "Can I get help with my prescription?",
+        "How do I know my lens power?"
+      ],
+      "responses": [
+        "You can upload your prescription during checkout or in your profile.",
+        "If you need help with your prescription, our opticians are here to assist!",
+        "PD stands for Pupillary Distance. If you don't know it, we can help you measure it."
+      ]
+    },
+    {
+      "tag": "account_help",
+      "patterns": [
+        "How do I create an account?",
+        "I forgot my password",
+        "How do I update my profile?",
+        "Can I see my order history?",
+        "How do I log out?",
+        "How do I change my email?"
+      ],
+      "responses": [
+        "You can create an account or log in from the top right menu.",
+        "To reset your password, use the 'Forgot Password' link on the login page.",
+        "Your order history and profile can be accessed from your account dashboard."
+      ]
+    },
+    {
+      "tag": "virtual_tryon_help",
+      "patterns": [
+        "How does the virtual try-on work?",
+        "Can I try glasses with my camera?",
+        "Is the try-on tool safe?",
+        "Why isn't the try-on working?",
+        "Do I need to allow camera access?"
+      ],
+      "responses": [
+        "Our virtual try-on uses your camera to show how frames look on you. Just click 'Try On' and allow camera access.",
+        "If the tool isn't working, please check your browser permissions and try again."
+      ]
+    },
+    {
+      "tag": "payment_issues",
+      "patterns": [
+        "My payment failed",
+        "Can I pay with Khalti?",
+        "Is payment secure?",
+        "Why was my card declined?",
+        "Do you accept cash on delivery?",
+        "How do I use a promo code?"
+      ],
+      "responses": [
+        "We accept multiple payment methods including Khalti, cards, and cash on delivery in select areas.",
+        "If your payment failed, please try again or contact your bank.",
+        "All payments are processed securely. For promo codes, enter them at checkout."
+      ]
+    }
+  ]
+}

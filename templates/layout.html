@@ -21,15 +21,19 @@
 <body>
     <section class="nav-bar">
 		<section class="section-container flex-box flex-centered top-bar-container">
-			
+				
 				<span class="nav-logo"><img src="../static/images/logoo.png"></span>
 			
             
 			<button class="menu-btn"><i class="fa fa-navicon"></i></button>
 			 <span class="nav-bar-items flex-box justify-content-start">
 				<a href="/home"><span class="nav-item nav-current">Home</span></a>
-				<!--<a href="/adminlogin"><span class="nav-item">Admin</span></a>-->
+                <a href="/about"><span class="nav-item">About Us</span></a>
 
+				<a href="/adminlogin"><span class="nav-item">Admin</span></a>
+				<a href="{{ url_for('cart') }}" class="nav-item nav-link">Cart
+                    <span id="cart-count" style="background: #f85606; color: #fff; border-radius: 50%; padding: 2px 8px; font-size: 13px; position: relative; top: -8px; left: 2px; min-width: 22px; display: inline-block; text-align: center;">{{ session['cart']|length if session.get('cart') else 0 }}</span>
+                </a>
 			</span>
 			 <div class="search-area flex-box justify-content-start">
 				<!--<span class="nav-bar-search flex-box flex-centered">
@@ -37,18 +41,22 @@
 					<input type="search" placeholder="Search..." value="" name="s" autocomplete="off">
 				</span>
 				<a href="submitpage.html">-->
-				{% if request.endpoint != 'checkout' and request.endpoint != 'detail' %}
-                    <a href="{{ url_for('user_logout') }}" class="submit-btn" id="logout-btn"><i class="fa fa-submit">Logout</i></a>
-				</a>
-                 {% endif %}
-                  <div class="search-area flex-box justify-content-start">
-                   
-    
-   {% if request.endpoint != 'checkout' and request.endpoint != 'detail' %}
-                    <a href="{{ url_for('login') }}" class="submit-btn" id="login-btn"><i class="fa fa-user-plus">Login</i></a>
-                    {% endif %}
+				{% if current_user.is_authenticated %}
+        <div class="dropdown">
+            <a class="nav-item nav-link dropdown-toggle d-flex align-items-center"
+               href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="{{ url_for('static', filename='images/userimage.png') }}" alt="User"
+                     style="width:28px; height:28px; border-radius:50%; margin-right:8px;">
+                {{ current_user.firstname }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="{{ url_for('user_logout') }}">Logout</a></li>
+            </ul>
+        </div>
+    {% else %}
+        <a href="{{ url_for('login') }}" class="submit-btn" id="login-btn"><i class="fa fa-user-plus">Login</i></a>
+    {% endif %}
 			</div> 
-            </div> 
 		</section>
 	</section>
 	
@@ -110,28 +118,16 @@
         
         if (isAuthenticated) {
             $('#login-btn').hide(); // Hide login button
-            $('#logout-btn').show(); // Show logout button
+            // The dropdown logic is now handled by Bootstrap's dropdown
         } else {
             $('#login-btn').show(); // Show login button
-            $('#logout-btn').hide(); // Hide logout button
+            // The dropdown logic is now handled by Bootstrap's dropdown
         }
 
         // Optional: If you want to handle AJAX logout
-        $('#logout-btn').click(function(event) {
-            event.preventDefault(); // Prevent default action
-            $.ajax({
-                url: "{{ url_for('user_logout') }}",
-                type: "POST",
-                success: function(response) {
-                    // On success, refresh the page or redirect
-                    location.reload(); // Reload to update button status
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            });
-        });
+        // This script block is no longer needed as the logout is handled by Bootstrap's dropdown
     });
 </script>
-
-</html>
+  </script>
+  
+  </html>

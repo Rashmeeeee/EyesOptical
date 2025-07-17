@@ -49,12 +49,12 @@
     </div>
    <div class="video-container">
     <div class="flex-box detail-actions hidden" id="try-success" >
-        <p></p>
-        <a href="/checkout/{{id}}"><button class="submit-btn margin-right-16" data-product-id="{{ id }}">Buy Now</button></a>
+        <p>Seems like you like the product</p>
+        <a href="{{ url_for('checkout') }}" class="submit-btn margin-right-16" id="tryon-buy-now-btn">Buy Now</a>
     </div>
     <div class="flex-box detail-actions hidden" id="try-failed">
-        <p></p>
-    <a href="/checkout/{{id}}"><button class="submit-btn margin-right-16" data-product-id="{{ id }}">Buy Now</button></a></div>
+        <p>Seems like you are not happy with the product.Do you want to change the product</p>
+    </div>
     <div id="video">
         <img  src="{{url_for('video')}}" class="destory"/>
     </div>
@@ -132,6 +132,25 @@
     .modal-footer .btn-secondary:hover {
         background-color: rgba(54, 165, 159, 0.1); /* Lighten on hover */
     }
+    .qty-btn {
+        color: #fff;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        padding: 0;
+        cursor: pointer;
+    }
+    .qty-input {
+        background: none;
+        color: #fff;
+        border: none;
+        font-size: 1.2rem;
+        width: 40px;
+        text-align: center;
+    }
 </style>
 
 
@@ -156,16 +175,10 @@
 
 <script>
 $(document).ready(function() {
-    $('.submit-btn').click(function(event) {
-        event.preventDefault(); // Prevent default action
-
+    $('#tryon-buy-now-btn').click(function(event) {
         {% if not current_user.is_authenticated %}
-            // Show the modal if the user is not logged in
+            event.preventDefault();
             $('#loginRequiredModal').modal('show');
-        {% else %}
-            // Redirect to checkout if logged in
-            const productId = $(this).data('product-id'); // Assuming you have product-id data attribute
-            window.location.href = "/checkout/" + productId;
         {% endif %}
     });
 });
@@ -216,6 +229,38 @@ $(document).ready(function() {
                 })
             });
         }, 5000);
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.querySelector('.cart-form');
+        if (form) {
+            var minus = form.querySelector('.minus');
+            var plus = form.querySelector('.plus');
+            var input = form.querySelector('.qty-input');
+            var warning = form.querySelector('#qty-warning');
+            minus.addEventListener('click', function(e) {
+                e.preventDefault();
+                let val = parseInt(input.value);
+                if (val > 0) input.value = val - 1;
+                if (warning) warning.style.display = 'none';
+            });
+            plus.addEventListener('click', function(e) {
+                e.preventDefault();
+                let val = parseInt(input.value);
+                if (val < 5) {
+                    input.value = val + 1;
+                    if (warning) warning.style.display = 'none';
+                } else {
+                    if (warning) warning.style.display = 'block';
+                }
+            });
+            form.addEventListener('submit', function(e) {
+                let val = parseInt(input.value);
+                if (val > 5) {
+                    if (warning) warning.style.display = 'block';
+                    e.preventDefault();
+                }
+            });
+        }
+    });
 </script>
 
 
