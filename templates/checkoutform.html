@@ -98,10 +98,10 @@
             </div>
         </fieldset>
         <div class="form-group mt-4 text-center">
-   <div class="payment-method-container">
+    <div class="payment-method-container">
         <span class="payment-method-text">Payment Method:</span>
-        <button type="button" id="khalti-payment-button" class="khalti-btn">
-            <img src="{{ url_for('static', filename='images/khalti.png') }}" alt="Pay with Khalti" class="khalti-img">
+        <button type="button" id="esewa-payment-button" class="esewa-btn">
+            <img src="{{ url_for('static', filename='images/eswea.png') }}" alt="Pay with Esewa" class="esewa-img">
         </button>
     </div>
 </div>
@@ -121,38 +121,18 @@
         </div>
     {% endfor %}
     </div>
+        
 </section>
-<script src="https://khalti.com/static/khalti-checkout.js"></script>
 <script>
-    var config = {
-        "publicKey": "test_public_key_dc74e0fd57cb46cd93832aee0a390234", // paste your key here
-        "productIdentity": "123456",
-        "productName": "Test Product",
-        "productUrl": "http://localhost/",
-        "paymentPreference": [
-            "KHALTI",
-            "EBANKING",
-            "MOBILE_BANKING",
-            "CONNECT_IPS",
-            "SCT",
-        ],
-        "eventHandler": {
-            onSuccess(payload) {
-                alert("Payment successful! Token: " + payload.token);
-            },
-            onError(error) {
-                alert("Payment failed: " + JSON.stringify(error));
-            },
-            onClose() {
-                console.log('Widget is closing');
-            }
-        }
-    };
-    var checkout = new KhaltiCheckout(config);
-    var btn = document.getElementById("khalti-payment-button");
-    btn.onclick = function () {
-        checkout.show({amount: 1000});
-    }
+document.getElementById('esewa-payment-button').addEventListener('click', function() {
+    // Show loading state
+    this.disabled = true;
+    this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+    
+    // Redirect to eSewa request page with amount
+    const totalAmount = {{ total }};
+    window.location.href = "{{ url_for('esewa_request') }}?amount=" + totalAmount;
+});
 </script>
 
 {% endblock %}

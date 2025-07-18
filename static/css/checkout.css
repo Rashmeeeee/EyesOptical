@@ -20,7 +20,7 @@
     font: "Rubik",Sans-serrif;
 }
 
-.khalti-btn {
+.esewa-btn {
     background: none;
     border: none;
     padding: 0;
@@ -28,11 +28,11 @@
     transition: transform 0.2s ease;
 }
 
-.khalti-btn:hover {
+.esewa-btn:hover {
     transform: scale(1.05);
 }
 
-.khalti-img {
+.esewa-img {
     width: 160px; /* Adjust as needed */
     height: auto;
 }

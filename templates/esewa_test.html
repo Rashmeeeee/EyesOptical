@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">eSewa Payment Test</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <h4>Test Payment Amount: NPR {{ total_amount }}</h4>
+                        <p class="text-muted">This is a test payment using eSewa's test environment</p>
+                    </div>
+                    
+                    <!-- Direct eSewa Form -->
+                    <form action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST" id="esewa-form">
+                        <input type="hidden" name="amount" value="{{ amount }}" required>
+                        <input type="hidden" name="tax_amount" value="{{ tax_amount }}" required>
+                        <input type="hidden" name="total_amount" value="{{ total_amount }}" required>
+                        <input type="hidden" name="transaction_uuid" value="{{ transaction_uuid }}" required>
+                        <input type="hidden" name="product_code" value="{{ product_code }}" required>
+                        <input type="hidden" name="product_service_charge" value="0" required>
+                        <input type="hidden" name="product_delivery_charge" value="0" required>
+                        <input type="hidden" name="success_url" value="{{ success_url }}" required>
+                        <input type="hidden" name="failure_url" value="{{ failure_url }}" required>
+                        <input type="hidden" name="signed_field_names" value="total_amount,transaction_uuid,product_code" required>
+                        <input type="hidden" name="signature" value="{{ signature }}" required>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-credit-card me-2"></i>
+                                Proceed to eSewa Payment
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-4">
+                        <div class="alert alert-info">
+                            <h5>Test Instructions:</h5>
+                            <ul>
+                                <li>Click the button above to proceed to eSewa</li>
+                                <li>Use test credentials: Phone: 9806800001, Password: test123</li>
+                                <li>If reCAPTCHA fails, try refreshing the page or using a different browser</li>
+                                <li>Complete the payment to test the integration</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <a href="{{ url_for('checkout') }}" class="btn btn-secondary">Back to Checkout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-submit the form after a short delay
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        document.getElementById('esewa-form').submit();
+    }, 3000); // 3 second delay to allow user to read instructions
+});
+</script>
+{% endblock %} 

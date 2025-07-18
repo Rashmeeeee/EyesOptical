@@ -108,144 +108,79 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"User({self.id}{self.firstname},{self.email},{self.password})"
-# Khalti Configuration
-# Get your actual Khalti API credentials from: https://khalti.com/merchant/account/apikey/
-# For development, you can use test credentials
-# For production, use live credentials
+# eSewa Configuration
+# eSewa integration for payment processing
+# Test product code: EPAYTEST
+# Live URL: https://esewa.com.np/epay/main
 
-# IMPORTANT: You need to replace these with real Khalti API credentials
-# The current values are placeholders and will cause "Invalid token" errors
-# KHALTI_TEST_PUBLIC_KEY = os.environ.get('KHALTI_PUBLIC_KEY', "test_public_key_dc74e0fd57cb46cd93832aee0a390234")
-# KHALTI_TEST_SECRET_KEY = os.environ.get('KHALTI_SECRET_KEY', "test_secret_key_...")  # Replace with your actual secret key
-# KHALTI_VERIFY_URL = "https://khalti.com/api/v2/payment/verify/"
+import hmac
+import hashlib
+import base64
 
-# For testing purposes, you can temporarily use these test credentials:
-# KHALTI_TEST_PUBLIC_KEY = "test_public_key_dc74e0fd57cb46cd93832aee0a390234"
-# KHALTI_TEST_SECRET_KEY = "test_secret_key_..."  # This needs to be a real secret key
+def generate_esewa_signature(secret_key, message):
+    """Generate HMAC SHA256 signature for eSewa"""
+    key = secret_key.encode('utf-8')
+    message = message.encode('utf-8')
+    
+    hmac_sha256 = hmac.new(key, message, hashlib.sha256)
+    digest = hmac_sha256.digest()
+    
+    # Convert the digest to a Base64-encoded string
+    signature = base64.b64encode(digest).decode('utf-8')
+    
+    return signature
 
-# @app.route('/initiate-khalti', methods=['POST'])
-# def initiate_khalti():
-#     try:
-#         product_id = request.form.get('product_id')
-#         product = Product.query.get(product_id)
-        
-#         if not product:
-#             return jsonify({"success": False, "message": "Product not found"}), 404
-
-#         # Check if we're using placeholder credentials
-#         if KHALTI_TEST_SECRET_KEY == "test_secret_key_...":
-#             return jsonify({
-#                 "success": False, 
-#                 "message": "Khalti API credentials not configured. Please set up real Khalti API credentials. See KHALTI_SETUP.md for instructions."
-#             }), 400
-
-#         payload = {
-#             "return_url": url_for('payment_success', _external=True),
-#             "website_url": url_for('home', _external=True),
-#             "amount": product.price * 100,  # Convert to paisa
-#             "purchase_order_id": f"order_{int(time.time())}",
-#             "purchase_order_name": product.name,
-#             "customer_info": {
-#                 "name": request.form.get('firstname') + " " + request.form.get('lastname'),
-#                 "email": request.form.get('email'),
-#                 "phone": request.form.get('phone')
-#             }
-#         }
-        
-#         headers = {
-#             "Authorization": f"Key {KHALTI_TEST_SECRET_KEY}",
-#             "Content-Type": "application/json"
-#         }
-        
-#         response = requests.post(
-#             "https://a.khalti.com/api/v2/epayment/initiate/",
-#             json=payload,
-#             headers=headers
-#         )
-        
-#         if response.status_code == 200:
-#             return jsonify({
-#                 "success": True,
-#                 "payment_url": response.json()['payment_url']
-#             })
-        
-#         # Handle specific error cases
-#         error_detail = response.json().get('detail', 'Payment initiation failed')
-#         if "Invalid token" in error_detail:
-#             return jsonify({
-#                 "success": False,
-#                 "message": "Invalid Khalti API credentials. Please check your KHALTI_SECRET_KEY configuration."
-#             }), 400
-        
-#         return jsonify({
-#             "success": False,
-#             "message": error_detail
-#         }), 400
-        
-#     except Exception as e:
-#         return jsonify({"success": False, "message": str(e)}), 500
-
-@app.route('/payment/success')
-def payment_success():
-    # This endpoint is called by Khalti after successful payment
-    # You can add logic here to handle the success callback
-    return render_template('payment_success.html')
-
-@app.route('/payment/verify', methods=['POST'])
-def verify_payment():
+@app.route('/esewa/request')
+@login_required
+def esewa_request():
+    """Generate eSewa payment request with signature"""
     try:
-        # Get the pidx from the callback (Khalti sends this after payment)
-        pidx = request.form.get('pidx')
-        if not pidx:
-            return jsonify({"success": False, "message": "Missing pidx parameter"}), 400
-
-        # Verify payment with Khalti
-        response = requests.post(
-            KHALTI_VERIFY_URL,
-            data={"pidx": pidx},
-            headers={"Authorization": f"Key {KHALTI_TEST_SECRET_KEY}"},
-            timeout=10
-        )
-
-        response_data = response.json()
+        # Get order details (you can modify this based on your needs)
+        total_amount = request.args.get('amount', 100)  # Get amount from query params
+        transaction_uuid = str(uuid.uuid4())
         
-        if response.status_code == 200:
-            # Payment was successful - create order
-            # Note: In a real implementation, you might want to store order details in session
-            # or pass them through the return_url as parameters
-            
-            # For now, we'll create a basic order with available data
-            order = Order(
-                firstname=response_data.get('user', {}).get('name', '').split(' ')[0] or 'Customer',
-                lastname=' '.join(response_data.get('user', {}).get('name', '').split(' ')[1:]) or 'Name',
-                email=response_data.get('user', {}).get('email', 'customer@example.com'),
-                phone=response_data.get('user', {}).get('mobile', '0000000000'),
-                streetaddress=request.form.get('streetaddress', 'N/A'),
-                city=request.form.get('city', 'N/A'),
-                country=request.form.get('country', 'Nepal'),
-                product=request.form.get('product_id', 1)  # Default to product ID 1 if not provided
-            )
-            db.session.add(order)
-            db.session.commit()
-            
-            return jsonify({
-                "success": True,
-                "message": "Payment verified successfully",
-                "data": response_data
-            })
-        else:
-            return jsonify({
-                "success": False,
-                "message": response_data.get('detail', 'Payment verification failed'),
-                "khalti_response": response_data
-            }), 400
-            
+        # eSewa configuration
+        secret_key = "8gBm/:&EnhH.1/q"  # Test secret key from eSewa docs
+        product_code = "EPAYTEST"
+        
+        # Prepare data for signature
+        data_to_sign = f"total_amount={total_amount},transaction_uuid={transaction_uuid},product_code={product_code}"
+        
+        # Generate signature
+        signature = generate_esewa_signature(secret_key, data_to_sign)
+        
+        # Prepare context for template
+        context = {
+            'amount': total_amount,
+            'tax_amount': 0,
+            'total_amount': total_amount,
+            'transaction_uuid': transaction_uuid,
+            'product_code': product_code,
+            'signature': signature,
+            'success_url': url_for('esewa_success', _external=True),
+            'failure_url': url_for('esewa_failure', _external=True)
+        }
+        
+        return render_template('esewa_request.html', **context)
+        
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "message": f"Verification error: {str(e)}",
-            "error_type": type(e).__name__
-        }), 500
+        flash(f'Error generating eSewa request: {str(e)}', 'error')
+        return redirect(url_for('checkout'))
+
+
+
+@app.route('/esewa/success', methods=['GET', 'POST'])
+def esewa_success():
+    # You can verify the payment here if you want
+    # Show a success message to the user
+    return render_template('payment_success.html', message="Esewa payment successful!")
+
+@app.route('/esewa/failure', methods=['GET', 'POST'])
+def esewa_failure():
+    # Show a failure message to the user
+    return render_template('payment_failure.html', message="Esewa payment failed. Please try again.")
+
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
