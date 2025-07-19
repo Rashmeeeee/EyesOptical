@@ -60,7 +60,7 @@
                     {{form.price(class="form-control ")}}
                 {% endif %}
             </div>
-            <div class="form-group mb-2 d-none">
+            <div class="form-group mb-2">
                 {{form.discountPrice.label(class="form-label")}}
                 
                 {% if form.discountPrice.errors %}
@@ -76,6 +76,11 @@
             </div>
 
             <div class="form-group mb-2">
+                {{ form.checkbox(class="form-check-input me-2") }} 
+                {{ form.checkbox.label(class="form-check-label") }}
+            </div>
+
+            <div class="form-group mb-2">
                 {{ form.productImage.label() }}
                 {{ form.productImage(class="form-control-form")}}
                 {% if form.productImage.errors %}
@@ -83,9 +88,6 @@
                         <span>{{error}}</span>
                     {% endfor %}
                 {% endif %}
-            </div>
-            <div class="form-group mb-2 d-none">
-                {{ form.checkbox }} {{ form.checkbox.label }}
             </div>
         </fieldset>
         <div class="form-group mt-4">

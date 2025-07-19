@@ -38,7 +38,7 @@ app = Flask(__name__)
 # Load chatbot model
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-with open('intents.json', 'r') as json_data:
+with open('intents.json', 'r', encoding='utf-8') as json_data:
     intents = json.load(json_data)
 
 FILE = "data.pth"
@@ -93,6 +93,7 @@ class Order(db.Model):
     country = db.Column(db.String(20), nullable=False)
     product = db.Column(db.Integer, db.ForeignKey(
         'product.id'), nullable=False)
+    payment_method = db.Column(db.String(20), nullable=False)
 
     def __repr__(self):
         return f"Order({self.id}{self.firstname},{self.email},{self.phone},{self.product})"
@@ -158,7 +159,7 @@ def esewa_request():
             'product_code': product_code,
             'signature': signature,
             'success_url': url_for('esewa_success', _external=True),
-            'failure_url': url_for('esewa_failure', _external=True)
+            'failure_url': url_for('esewa_failure', product_id=transaction_uuid, _external=True)
         }
         
         return render_template('esewa_request.html', **context)
@@ -171,14 +172,67 @@ def esewa_request():
 
 @app.route('/esewa/success', methods=['GET', 'POST'])
 def esewa_success():
-    # You can verify the payment here if you want
-    # Show a success message to the user
-    return render_template('payment_success.html', message="Esewa payment successful!")
+    # (Optional) Verify payment with eSewa here
+
+    # Retrieve pending order info from session
+    pending = session.get('pending_order')
+    print(f"🔍 eSewa success called. Session data: {session}")
+    print(f"🔍 Pending order: {pending}")
+    if pending:
+        # Check if this is a single product order (from buynow) or cart order
+        if 'product_id' in pending:
+            # Single product order from buynow
+            product = Product.query.get(pending['product_id'])
+            if product:
+                order = Order(
+                    firstname=pending['firstname'],
+                    lastname=pending['lastname'],
+                    email=pending['email'],
+                    phone=pending['phone'],
+                    streetaddress=pending['streetaddress'],
+                    city=pending['city'],
+                    country=pending['country'],
+                    product=product.id,
+                    payment_method='esewa'
+                )
+                db.session.add(order)
+                db.session.commit()
+                print(f"✅ eSewa order saved successfully! Order ID: {order.id}")
+                print(f"✅ Customer: {order.firstname} {order.lastname}")
+                print(f"✅ Product ID: {order.product}")
+                print(f"✅ Payment Method: {order.payment_method}")
+        else:
+            # Cart order
+            cart = pending.get('cart', {})
+            for pid, qty in cart.items():
+                product = Product.query.get(int(pid))
+                if product:
+                    order = Order(
+                        firstname=pending['firstname'],
+                        lastname=pending['lastname'],
+                        email=pending['email'],
+                        phone=pending['phone'],
+                        streetaddress=pending['streetaddress'],
+                        city=pending['city'],
+                        country=pending['country'],
+                        product=product.id,
+                        payment_method='esewa'
+                    )
+                    db.session.add(order)
+            db.session.commit()
+            print(f"✅ Cart eSewa orders saved successfully!")
+            # Clear the cart from session
+            session['cart'] = {}
+        
+        # Clear the pending order from session
+        session.pop('pending_order', None)
+    flash("Order Successful with eSewa!", category="success")
+    return redirect(url_for('home'))
 
 @app.route('/esewa/failure', methods=['GET', 'POST'])
 def esewa_failure():
-    # Show a failure message to the user
-    return render_template('payment_failure.html', message="Esewa payment failed. Please try again.")
+    product_id = request.args.get('product_id')
+    return render_template('payment_failure.html', product_id=product_id)
 
 
 
@@ -186,6 +240,28 @@ def esewa_failure():
 def login():
     form = LoginForm()
     next_page = request.args.get('next')
+    
+    if request.method == 'POST':
+        # Check if this is an AJAX request from our modals
+        is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+        
+        if is_ajax:
+            # Handle AJAX login from modals
+            email = request.form.get('email')
+            password = request.form.get('password')
+            next_url = request.form.get('next')
+            
+            user = User.query.filter_by(email=email).first()
+            if user and check_password_hash(user.password, password):
+                login_user(user, remember=True)
+                if next_url and next_url.startswith('/'):
+                    return jsonify({'success': True, 'redirect': next_url})
+                else:
+                    return jsonify({'success': True, 'redirect': url_for('home')})
+            else:
+                return jsonify({'success': False, 'message': 'Login unsuccessful. Please check email and password.'})
+    
+    # Regular form submission (non-AJAX)
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and check_password_hash(user.password, form.password.data):
@@ -199,6 +275,7 @@ def login():
                 return redirect(url_for('home'))
         else:
             flash('Login unsuccessful. Please check email and password.', 'danger')
+    
     return render_template('login.html', form=form, next=next_page)
 
 
@@ -288,23 +365,81 @@ def checkout():
 
     form = CheckoutForm()
     if form.validate_on_submit():
-        # Save an order for each product in the cart
-        for item in products:
-            order = Order(
-                firstname=form.firstname.data,
-                lastname=form.lastname.data,
-                email=form.email.data,
-                phone=form.phone.data,
-                streetaddress=form.streetaddress.data,
-                city=form.city.data,
-                country=form.country.data,
-                product=item['product'].id
-            )
-            db.session.add(order)
-        db.session.commit()
-        session['cart'] = {}
-        flash("Order Successful", category="success")
-        return redirect(url_for('home'))
+        payment_method = request.form.get('payment_method')
+        if payment_method == 'cod':
+            # Save an order for each product in the cart
+            for item in products:
+                order = Order(
+                    firstname=form.firstname.data,
+                    lastname=form.lastname.data,
+                    email=form.email.data,
+                    phone=form.phone.data,
+                    streetaddress=form.streetaddress.data,
+                    city=form.city.data,
+                    country=form.country.data,
+                    product=item['product'].id,
+                    payment_method='cod'
+                )
+                db.session.add(order)
+            db.session.commit()
+            session['cart'] = {}
+            flash("Order Successful", category="success")
+            return redirect(url_for('home'))
+        elif payment_method == 'esewa':
+            # For eSewa, store user info and cart in session
+            session['pending_order'] = {
+                'firstname': form.firstname.data,
+                'lastname': form.lastname.data,
+                'email': form.email.data,
+                'phone': form.phone.data,
+                'streetaddress': form.streetaddress.data,
+                'city': form.city.data,
+                'country': form.country.data,
+                'cart': cart  # Save the cart dictionary
+            }
+            print(f"🔍 Pending order stored in session: {session['pending_order']}")
+            
+            # Generate eSewa payment data and redirect directly to eSewa
+            transaction_uuid = str(uuid.uuid4())
+            secret_key = "8gBm/:&EnhH.1/q"
+            product_code = "EPAYTEST"
+            
+            # Prepare data for signature
+            data_to_sign = f"total_amount={total},transaction_uuid={transaction_uuid},product_code={product_code}"
+            signature = generate_esewa_signature(secret_key, data_to_sign)
+            
+            # Create a simple HTML page that auto-submits to eSewa
+            html_content = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Redirecting to eSewa...</title>
+            </head>
+            <body>
+                <form id="esewaForm" action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST">
+                    <input type="hidden" name="amount" value="{total}">
+                    <input type="hidden" name="tax_amount" value="0">
+                    <input type="hidden" name="total_amount" value="{total}">
+                    <input type="hidden" name="transaction_uuid" value="{transaction_uuid}">
+                    <input type="hidden" name="product_code" value="{product_code}">
+                    <input type="hidden" name="product_service_charge" value="0">
+                    <input type="hidden" name="product_delivery_charge" value="0">
+                    <input type="hidden" name="success_url" value="{url_for('esewa_success', _external=True)}">
+                    <input type="hidden" name="failure_url" value="{url_for('esewa_failure', product_id=transaction_uuid, _external=True)}">
+                    <input type="hidden" name="signed_field_names" value="total_amount,transaction_uuid,product_code">
+                    <input type="hidden" name="signature" value="{signature}">
+                </form>
+                <script>
+                    document.getElementById('esewaForm').submit();
+                </script>
+            </body>
+            </html>
+            """
+            
+            return html_content
+        else:
+            flash("Please select a payment method", category="danger")
+            return render_template("checkoutform.html", form=form, products=products, total=total)
     return render_template("checkoutform.html", form=form, products=products, total=total)
 
 
@@ -360,6 +495,50 @@ def adminViewProducts():
     print(products)
     return render_template("adminviewproduct.html", products=products)
 
+
+@app.route("/edit/<int:id>", methods=['GET', 'POST'])
+@login_required
+def edit_product(id):
+    if not current_user.isSuperAdmin:
+        flash('Access denied. Admins only.', category='danger')
+        return redirect(url_for('home'))
+    
+    product = Product.query.get_or_404(id)
+    form = AddproductForm()
+    
+    if form.validate_on_submit():
+        # Update product details
+        product.name = form.name.data
+        product.detail = form.description.data
+        product.price = form.price.data
+        product.discounted_price = form.discountPrice.data if form.discountPrice.data else 0
+        product.has_discount = form.checkbox.data
+        
+        # Handle image upload if new image is provided
+        if form.productImage.data:
+            # Delete old image if it exists
+            if product.images and product.images != '../static/images/products/':
+                old_file_path = product.images.replace('../', '')
+                if os.path.exists(old_file_path):
+                    os.remove(old_file_path)
+            
+            # Save new image
+            picture_file = saveProductImage(form.productImage.data, form.name.data)
+            product.images = picture_file
+        
+        db.session.commit()
+        flash("Product Updated Successfully", category="success")
+        return redirect(url_for('adminViewProducts'))
+    
+    elif request.method == 'GET':
+        # Pre-populate form with existing data
+        form.name.data = product.name
+        form.description.data = product.detail
+        form.price.data = str(product.price)
+        form.discountPrice.data = str(product.discounted_price) if product.discounted_price else ''
+        form.checkbox.data = product.has_discount
+    
+    return render_template("editproductform.html", form=form, product=product)
 
 @app.route("/delete/<int:id>")
 def delete(id):
@@ -588,11 +767,8 @@ def cart():
         del cart[pid]
     session['cart'] = cart
     if request.method == 'POST':
-        # Handle checkout logic here (same form as add_to_cart)
-        # You can process the order, clear the cart, etc.
-        flash('Order placed successfully!', 'success')
-        session['cart'] = {}
-        return redirect(url_for('home'))
+        # Redirect to checkout page for proper payment processing
+        return redirect(url_for('checkout'))
     return render_template('cart.html', products=products, total=total)
 
 @app.route('/remove_from_cart', methods=['POST'])
@@ -611,21 +787,76 @@ def buynow(id):
     product = Product.query.get_or_404(id)
     form = CheckoutForm()
     if form.validate_on_submit():
-        # Save order for this product only
-        order = Order(
-            firstname=form.firstname.data,
-            lastname=form.lastname.data,
-            email=form.email.data,
-            phone=form.phone.data,
-            streetaddress=form.streetaddress.data,
-            city=form.city.data,
-            country=form.country.data,
-            product=product.id
-        )
-        db.session.add(order)
-        db.session.commit()
-        flash("Order Successful", category="success")
-        return redirect(url_for('home'))
+        payment_method = request.form.get('payment_method')
+        if payment_method == 'cod':
+            # Save order for this product only
+            order = Order(
+                firstname=form.firstname.data,
+                lastname=form.lastname.data,
+                email=form.email.data,
+                phone=form.phone.data,
+                streetaddress=form.streetaddress.data,
+                city=form.city.data,
+                country=form.country.data,
+                product=product.id,
+                payment_method='cod'
+            )
+            db.session.add(order)
+            db.session.commit()
+            flash("Order Successful", category="success")
+            return redirect(url_for('home'))
+        # For eSewa, store user info and product in session
+        session['pending_order'] = {
+            'firstname': form.firstname.data,
+            'lastname': form.lastname.data,
+            'email': form.email.data,
+            'phone': form.phone.data,
+            'streetaddress': form.streetaddress.data,
+            'city': form.city.data,
+            'country': form.country.data,
+            'product_id': product.id,
+            'product_price': product.price
+        }
+        print(f"🔍 Pending order stored in session: {session['pending_order']}")
+        
+        # Generate eSewa payment data and redirect directly to eSewa
+        transaction_uuid = str(uuid.uuid4())
+        secret_key = "8gBm/:&EnhH.1/q"
+        product_code = "EPAYTEST"
+        
+        # Prepare data for signature
+        data_to_sign = f"total_amount={product.price},transaction_uuid={transaction_uuid},product_code={product_code}"
+        signature = generate_esewa_signature(secret_key, data_to_sign)
+        
+        # Create a simple HTML page that auto-submits to eSewa
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Redirecting to eSewa...</title>
+        </head>
+        <body>
+            <form id="esewaForm" action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST">
+                <input type="hidden" name="amount" value="{product.price}">
+                <input type="hidden" name="tax_amount" value="0">
+                <input type="hidden" name="total_amount" value="{product.price}">
+                <input type="hidden" name="transaction_uuid" value="{transaction_uuid}">
+                <input type="hidden" name="product_code" value="{product_code}">
+                <input type="hidden" name="product_service_charge" value="0">
+                <input type="hidden" name="product_delivery_charge" value="0">
+                <input type="hidden" name="success_url" value="{url_for('esewa_success', _external=True)}">
+                <input type="hidden" name="failure_url" value="{url_for('esewa_failure', product_id=transaction_uuid, _external=True)}">
+                <input type="hidden" name="signed_field_names" value="total_amount,transaction_uuid,product_code">
+                <input type="hidden" name="signature" value="{signature}">
+            </form>
+            <script>
+                document.getElementById('esewaForm').submit();
+            </script>
+        </body>
+        </html>
+        """
+        
+        return html_content
     # Pass a single product as a list for template compatibility
     return render_template("checkoutform.html", form=form, products=[{'product': product, 'qty': 1}], total=product.price)
 
@@ -634,24 +865,108 @@ def checkout_single(id):
     product = Product.query.get_or_404(id)
     form = CheckoutForm()
     if form.validate_on_submit():
-        # Save order for this product only
-        order = Order(
-            firstname=form.firstname.data,
-            lastname=form.lastname.data,
-            email=form.email.data,
-            phone=form.phone.data,
-            streetaddress=form.streetaddress.data,
-            city=form.city.data,
-            country=form.country.data,
-            product=product.id
-        )
-        db.session.add(order)
-        db.session.commit()
-        flash("Order Successful", category="success")
-        return redirect(url_for('home'))
+        payment_method = request.form.get('payment_method')
+        if payment_method == 'cod':
+            # Save order for this product only
+            order = Order(
+                firstname=form.firstname.data,
+                lastname=form.lastname.data,
+                email=form.email.data,
+                phone=form.phone.data,
+                streetaddress=form.streetaddress.data,
+                city=form.city.data,
+                country=form.country.data,
+                product=product.id,
+                payment_method='cod'
+            )
+            db.session.add(order)
+            db.session.commit()
+            flash("Order Successful", category="success")
+            return redirect(url_for('home'))
+        # For eSewa, store user info and product in session
+        session['pending_order'] = {
+            'firstname': form.firstname.data,
+            'lastname': form.lastname.data,
+            'email': form.email.data,
+            'phone': form.phone.data,
+            'streetaddress': form.streetaddress.data,
+            'city': form.city.data,
+            'country': form.country.data,
+            'product_id': product.id,
+            'product_price': product.price
+        }
+        
+        # Generate eSewa payment data and redirect directly to eSewa
+        transaction_uuid = str(uuid.uuid4())
+        secret_key = "8gBm/:&EnhH.1/q"
+        product_code = "EPAYTEST"
+        
+        # Prepare data for signature
+        data_to_sign = f"total_amount={product.price},transaction_uuid={transaction_uuid},product_code={product_code}"
+        signature = generate_esewa_signature(secret_key, data_to_sign)
+        
+        # Create a simple HTML page that auto-submits to eSewa
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Redirecting to eSewa...</title>
+        </head>
+        <body>
+            <form id="esewaForm" action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST">
+                <input type="hidden" name="amount" value="{product.price}">
+                <input type="hidden" name="tax_amount" value="0">
+                <input type="hidden" name="total_amount" value="{product.price}">
+                <input type="hidden" name="transaction_uuid" value="{transaction_uuid}">
+                <input type="hidden" name="product_code" value="{product_code}">
+                <input type="hidden" name="product_service_charge" value="0">
+                <input type="hidden" name="product_delivery_charge" value="0">
+                <input type="hidden" name="success_url" value="{url_for('esewa_success', _external=True)}">
+                <input type="hidden" name="failure_url" value="{url_for('esewa_failure', product_id=transaction_uuid, _external=True)}">
+                <input type="hidden" name="signed_field_names" value="total_amount,transaction_uuid,product_code">
+                <input type="hidden" name="signature" value="{signature}">
+            </form>
+            <script>
+                document.getElementById('esewaForm').submit();
+            </script>
+        </body>
+        </html>
+        """
+        
+        return html_content
     # Pass a single product as a list for template compatibility
     return render_template("checkoutform.html", form=form, products=[{'product': product, 'qty': 1}], total=product.price)
 
+
+@app.route('/get_esewa_signature')
+@login_required
+def get_esewa_signature():
+    """Generate eSewa signature for modal payment"""
+    try:
+        amount = request.args.get('amount')
+        transaction_uuid = request.args.get('transaction_uuid')
+        
+        if not amount or not transaction_uuid:
+            return jsonify({'error': 'Missing parameters'}), 400
+        
+        # eSewa configuration
+        secret_key = "8gBm/:&EnhH.1/q"
+        product_code = "EPAYTEST"
+        
+        # Prepare data for signature
+        data_to_sign = f"total_amount={amount},transaction_uuid={transaction_uuid},product_code={product_code}"
+        
+        # Generate signature using your existing function
+        signature = generate_esewa_signature(secret_key, data_to_sign)
+        
+        return jsonify({
+            'signature': signature,
+            'success_url': url_for('esewa_success', _external=True),
+            'failure_url': url_for('esewa_failure', product_id=transaction_uuid, _external=True)
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

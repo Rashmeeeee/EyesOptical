@@ -1,0 +1,117 @@
+{% extends "adminlayout.html" %}
+{% block content%}
+{% with messages=get_flashed_messages(with_categories=true) %}
+	{% if messages%}
+		{% for category,message in messages %}
+			<div class="alert alert-{{ category }} m-4">
+				{{message}}
+			</div>
+		{% endfor %}
+	{% endif %}
+	{% endwith %}
+    
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8">
+                <h2 class="mb-4">Edit Product</h2>
+                <form method="POST" action="" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    <fieldset class="form-group">
+                        <div class="form-group mb-3">
+                            {{form.name.label(class="form-label fw-bold")}}
+                            
+                            {% if form.name.errors %}
+                                {{form.name(class="form-control is-invalid")}}
+                                <div class="invalid-feedback">
+                                    {% for error in form.name.errors %}
+                                        <span>{{error}}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{form.name(class="form-control")}}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            {{form.description.label(class="form-label fw-bold")}}
+                            
+                            {% if form.description.errors %}
+                                {{form.description(class="form-control is-invalid", rows=4)}}
+                                <div class="invalid-feedback">
+                                    {% for error in form.description.errors %}
+                                        <span>{{error}}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{form.description(class="form-control", rows=4)}}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            {{form.price.label(class="form-label fw-bold")}}
+                            
+                            {% if form.price.errors %}
+                                {{form.price(class="form-control is-invalid")}}
+                                <div class="invalid-feedback">
+                                    {% for error in form.price.errors %}
+                                        <span>{{error}}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{form.price(class="form-control")}}
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            {{form.discountPrice.label(class="form-label fw-bold")}}
+                            
+                            {% if form.discountPrice.errors %}
+                                {{form.discountPrice(class="form-control is-invalid")}}
+                                <div class="invalid-feedback">
+                                    {% for error in form.discountPrice.errors %}
+                                        <span>{{error}}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{form.discountPrice(class="form-control")}}
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group mb-3">
+                            {{ form.checkbox(class="form-check-input me-2") }} 
+                            {{ form.checkbox.label(class="form-check-label fw-bold") }}
+                        </div>
+
+                        <div class="form-group mb-3">
+                            {{ form.productImage.label(class="form-label fw-bold") }}
+                            {{ form.productImage(class="form-control")}}
+                            {% if form.productImage.errors %}
+                                {% for error in form.productImage.errors %}
+                                    <span class="text-danger">{{error}}</span>
+                                {% endfor %}
+                            {% endif %}
+                            <small class="form-text text-muted">Leave empty to keep the current image</small>
+                        </div>
+                    </fieldset>
+                    
+                    <div class="form-group mt-4">
+                        {{form.submit(class="btn btn-primary me-2")}}
+                        <a href="{{ url_for('adminViewProducts') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Current Product Image</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <img src="{{product.images}}" alt="Current Product Image" class="img-fluid" style="max-height: 200px;">
+                        <p class="mt-2 text-muted">{{product.name}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} 

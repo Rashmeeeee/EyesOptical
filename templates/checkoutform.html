@@ -1,5 +1,67 @@
 {% extends "layout.html" %}
 {% block content%}
+<style>
+/* Beautiful eSewa Modal Styles */
+#esewaModal .modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+#esewaModal .modal-header {
+    background: linear-gradient(135deg, #00bb2d, #009922);
+    color: white;
+    border: none;
+    padding: 1.5rem;
+}
+
+#esewaModal .modal-title {
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+#esewaModal .btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+#esewaModal .btn-close:hover {
+    opacity: 1;
+}
+
+#esewaModal .modal-body {
+    padding: 2rem;
+    background: #f8f9fa;
+}
+
+#esewaModal .btn-success {
+    background: linear-gradient(135deg, #00bb2d, #009922);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 187, 45, 0.3);
+}
+
+#esewaModal .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 187, 45, 0.4);
+    background: linear-gradient(135deg, #009922, #007a1a);
+}
+
+#esewaModal h6 {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+</style>
+
 <section class="checkout-section section-container d-flex detail-container justify-content-between">
     <form method="POST" action="">
         {{ form.hidden_tag() }}
@@ -98,12 +160,19 @@
             </div>
         </fieldset>
         <div class="form-group mt-4 text-center">
-    <div class="payment-method-container">
-        <span class="payment-method-text">Payment Method:</span>
-        <button type="button" id="esewa-payment-button" class="esewa-btn">
-            <img src="{{ url_for('static', filename='images/eswea.png') }}" alt="Pay with Esewa" class="esewa-img">
-        </button>
-    </div>
+  <div class="payment-method-container d-flex justify-content-center align-items-center gap-3">
+    <span class="payment-method-text" style="font-weight:bold;">Payment Method:</span>
+    <button type="button" id="esewa-payment-button" class="esewa-btn pm-disabled" style="background: none; border: none;">
+      <img src="{{ url_for('static', filename='images/eswea.png') }}" alt="Pay with Esewa" class="esewa-img" style="height:48px;">
+      <span id="esewa-tick" style="display:none;">✔️</span>
+    </button>
+    <button type="button" id="cod-payment-button" 
+      class="btn btn-danger fw-bold pm-disabled"
+      style="min-width:150px; font-size:1.05rem; box-shadow:0 2px 8px #dc354580;">
+      Cash on Delivery <span id="cod-tick" style="display:none;">✔️</span>
+    </button>
+  </div>
+  <input type="hidden" name="payment_method" id="payment-method" value="">
 </div>
 
         <div class="form-group mt-4">
@@ -124,15 +193,93 @@
         
 </section>
 <script>
-document.getElementById('esewa-payment-button').addEventListener('click', function() {
-    // Show loading state
-    this.disabled = true;
-    this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+function isFormValid() {
+    let valid = true;
+    // Check all the form fields that should be filled
+    const fields = [
+        'email',
+        'firstname', 
+        'lastname',
+        'streetaddress',
+        'city',
+        'country',
+        'phone'
+    ];
     
-    // Redirect to eSewa request page with amount
-    const totalAmount = {{ total }};
-    window.location.href = "{{ url_for('esewa_request') }}?amount=" + totalAmount;
+    fields.forEach(function(fieldName) {
+        const field = document.querySelector(`[name="${fieldName}"]`);
+        if (field && !field.value.trim()) {
+            valid = false;
+        }
+    });
+    
+    return valid;
+}
+
+function togglePaymentButtons() {
+    const enabled = isFormValid();
+    let esewaBtn = document.getElementById('esewa-payment-button');
+    let codBtn = document.getElementById('cod-payment-button');
+    if (enabled) {
+        esewaBtn.classList.remove('pm-disabled');
+        codBtn.classList.remove('pm-disabled');
+    } else {
+        esewaBtn.classList.add('pm-disabled');
+        codBtn.classList.add('pm-disabled');
+    }
+}
+
+function showFillFormPopup() {
+    alert("Please fill the form first to choose a payment method.");
+}
+
+setTimeout(function() {
+    document.querySelectorAll('input, select').forEach(function(input) {
+        input.addEventListener('input', togglePaymentButtons);
+    });
+    togglePaymentButtons();
+
+    document.getElementById('esewa-payment-button').addEventListener('click', function(e) {
+        if (this.classList.contains('pm-disabled')) {
+            showFillFormPopup();
+            e.preventDefault();
+            return;
+        }
+        document.getElementById('cod-tick').style.display = 'none';
+        document.getElementById('esewa-tick').style.display = 'inline';
+        // Set the payment method to esewa and submit the form
+        document.getElementById('payment-method').value = 'esewa';
+        // Submit the form to store pending order
+        document.querySelector('form').submit();
+    });
+
+
+
+    document.getElementById('cod-payment-button').addEventListener('click', function(e) {
+        if (this.classList.contains('pm-disabled')) {
+            showFillFormPopup();
+            e.preventDefault();
+            return;
+        }
+        document.getElementById('esewa-tick').style.display = 'none';
+        // Set the payment method
+        document.getElementById('payment-method').value = 'cod';
+        document.getElementById('cod-tick').style.display = 'inline';
+        // Submit the form
+        document.querySelector('form').submit();
+    });
+}, 0);
+
+// If you still have a submit button, prevent submission unless payment method is set
+document.querySelector('form').addEventListener('submit', function(e) {
+    var paymentMethod = document.getElementById('payment-method').value;
+    if (paymentMethod !== 'cod' && paymentMethod !== 'esewa') {
+        alert('Please choose payment method before submitting.');
+        e.preventDefault();
+    }
 });
 </script>
+
+
 
 {% endblock %}

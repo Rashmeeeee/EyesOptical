@@ -1,25 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<style>
-.chat-icon-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    z-index: 1000;
-}
-
-.chat-icon-btn img {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-}
-</style>
-
 <div id="slider">
 	<figure>
 		<img src="{{ url_for('static', filename='images/slider/slide2.webp') }}" alt>
@@ -62,141 +43,164 @@
 				<img src="../static/images/logoo.png">
 				<h3 class="main-small-text">Discover the best Eyewares with live fit test.</h3>
 			</div>
-			<button class="submit-btn unhided-btn">Get In Touch</button>
+			<button class="submit-btn unhided-btn" id="getInTouchBtn">Get In Touch</button>
 			</div>
 		</section>
-<div class="chatbox-modal" id="chatboxModal">
-        <div class="chatbox-header">
-            <span>Sam</span>
-<button class="close-chatbox-btn" id="closeChatboxBtn" aria-label="Close">
-  <svg viewBox="0 0 24 24" width="24" height="24">
-    <circle cx="12" cy="12" r="12" fill="red"/>
-    <line x1="8" y1="8" x2="16" y2="16" stroke="white" stroke-width="2"/>
-    <line x1="16" y1="8" x2="8" y2="16" stroke="white" stroke-width="2"/>
-  </svg>
-</button>
 
-
-
-</button>
-        </div>
-        <div class="chatbox-body" id="chatboxBody">
-            <!-- Chat messages will go here -->
-        </div>
-        <div class="chatbox-footer">
-            <input type="text" id="chatboxInput" class="chatbox-input" placeholder="Type a message...">
+<!-- Feedback Modal -->
+<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #36a59f; color: white;">
+                <h5 class="modal-title" id="feedbackModalLabel">
+                    <i class="fa fa-comments me-2"></i>
+                    Get In Touch - Feedback Form
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="feedbackForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="firstName" class="form-label fw-bold">First Name *</label>
+                            <input type="text" class="form-control" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lastName" class="form-label fw-bold">Last Name *</label>
+                            <input type="text" class="form-control" id="lastName" name="lastName" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label fw-bold">Email *</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label fw-bold">Phone Number *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" pattern="[0-9]{10}" placeholder="10-digit number" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="subject" class="form-label fw-bold">Subject *</label>
+                        <select class="form-select" id="subject" name="subject" required>
+                            <option value="">Select a subject</option>
+                            <option value="General Inquiry">General Inquiry</option>
+                            <option value="Product Information">Product Information</option>
+                            <option value="Order Status">Order Status</option>
+                            <option value="Technical Support">Technical Support</option>
+                            <option value="Feedback">Feedback</option>
+                            <option value="Complaint">Complaint</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="message" class="form-label fw-bold">Message *</label>
+                        <textarea class="form-control" id="message" name="message" rows="4" placeholder="Tell us how we can help you..." required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">How did you hear about us?</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="hearAbout" id="hearAbout1" value="Social Media">
+                            <label class="form-check-label" for="hearAbout1">Social Media</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="hearAbout" id="hearAbout2" value="Friend/Family">
+                            <label class="form-check-label" for="hearAbout2">Friend/Family</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="hearAbout" id="hearAbout3" value="Search Engine">
+                            <label class="form-check-label" for="hearAbout3">Search Engine</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="hearAbout" id="hearAbout4" value="Advertisement">
+                            <label class="form-check-label" for="hearAbout4">Advertisement</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="hearAbout" id="hearAbout5" value="Other">
+                            <label class="form-check-label" for="hearAbout5">Other</label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-lg" style="background-color: #36a59f; color: white; border: none;">
+                            <i class="fa fa-paper-plane me-2"></i>
+                            Send Message
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-<!-- Chatbot Toggle Button with Image Only -->
-<button id="openChatboxBtn" class="chat-icon-btn">
-    <img src="{{ url_for('static', filename='images/chat.png') }}" alt="Chat Icon" />
-
-</button>
-
-<script>
-
-    const isAuthenticated = {{ 'true' if current_user.is_authenticated else 'false' }};
-
-
-    const inputBox = document.getElementById("chatboxInput");
-    const chatboxBody = document.getElementById("chatboxBody");
-
-    document.getElementById("openChatboxBtn").addEventListener("click", () => {
-    if (!isAuthenticated) {
-        // Show login modal
-        $('#chatLoginRequiredModal').modal('show');
-    } else {
-        // Show chatbox
-        document.getElementById("chatboxModal").style.display = "block";
-    }
-});
-
-
-   document.getElementById("closeChatboxBtn").addEventListener("click", () => {
-    document.getElementById("chatboxModal").style.display = "none";
-    chatboxBody.innerHTML = ""; // <-- This clears the chat messages
-});
-
-    inputBox.addEventListener("keypress", function (event) {
-        if (event.key === "Enter") {
-            const input = inputBox.value.trim();
-            if (input !== "") {
-                appendMessage("You", input);
-                inputBox.value = "";
-
-                fetch('/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ message: input })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    appendMessage("Sam", data.response);
-                })
-                .catch(() => {
-                    appendMessage("Sam", "Sorry, something went wrong.");
-                });
-            }
-        }
-    });
-
-  function appendMessage(sender, message) {
-    const msg = document.createElement("div");
-    msg.classList.add("chat-message", sender.toLowerCase()); // class: chat-message you / chat-message sam
-    msg.innerHTML = `<strong>${sender}:</strong> ${message}`;
-    chatboxBody.appendChild(msg);
-    chatboxBody.scrollTop = chatboxBody.scrollHeight;
-}
-
-</script>
-<!-- Modal for Chat Login Required -->
-<div class="modal fade" id="chatLoginRequiredModal" tabindex="-1" aria-labelledby="chatLoginRequiredModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="chatLoginRequiredModalLabel">Login Required</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        You must be logged in to chat with Sam. Please log in to continue.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <a href="/login?next=/" class="btn btn-primary">Log In</a>
-      </div>
-    </div>
-  </div>
 </div>
 
-<style>
-    /* Shared Modal Styling */
-    .modal-content {
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="successModalLabel">
+                    <i class="fa fa-check-circle me-2"></i>
+                    Message Sent Successfully!
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <i class="fa fa-check-circle fa-3x mb-3" style="color: #36a59f;"></i>
+                <h5>Thank you for your message!</h5>
+                <p class="text-muted">We have received your feedback and will get back to you within 24 hours.</p>
+                <div class="mt-4">
+                    <button type="button" class="btn" style="background-color: #36a59f; color: white; border: none;" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    .modal-header {
-        background-color: #36a59f;
-        color: white;
-    }
+<script>
+// Check authentication for Get In Touch button
+document.addEventListener('DOMContentLoaded', function() {
+    const isAuthenticated = {{ 'true' if current_user.is_authenticated else 'false' }};
+    const getInTouchBtn = document.getElementById('getInTouchBtn');
+    
+    getInTouchBtn.addEventListener('click', function() {
+        if (!isAuthenticated) {
+            // Show login modal
+            $('#chatLoginRequiredModal').modal('show');
+        } else {
+            // Show feedback modal
+            const feedbackModal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+            feedbackModal.show();
+        }
+    });
+});
 
-    .modal-body {
-        font-size: 16px;
-        color: black;
-    }
-
-    .modal-footer .btn {
-        background-color: #36a59f;
-        color: white;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-    }
-
-    .modal-footer .btn:hover {
-        background-color: #28a745;
-    }
-</style>
+document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Get form data
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    // Here you can add AJAX call to send data to server
+    console.log('Feedback data:', data);
+    
+    // Show success modal
+    const feedbackModal = bootstrap.Modal.getInstance(document.getElementById('feedbackModal'));
+    feedbackModal.hide();
+    
+    // Show success message
+    setTimeout(() => {
+        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+        successModal.show();
+    }, 300);
+    
+    // Reset form
+    this.reset();
+});
+</script>
 
 {% endblock %}

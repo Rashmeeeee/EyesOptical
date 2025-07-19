@@ -1,13 +1,35 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container mt-5">
-    <div class="card text-center">
-        <div class="card-body">
-            <h2 class="card-title text-success">Payment Successful!</h2>
-            <p class="card-text">Thank you for your purchase.</p>
-            <p>Your order has been placed successfully.</p>
-            <a href="{{ url_for('home') }}" class="btn btn-primary">Return to Home</a>
-        </div>
+<style>
+.success-card {
+    max-width: 400px;
+    margin: 60px auto;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px #0001;
+    border: none;
+    background: #f8fff8;
+}
+.success-card .card-body {
+    padding: 2.5rem 2rem;
+}
+.success-title {
+    color: #28a745;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+.success-btn {
+    margin-top: 1.5rem;
+    border-radius: 50px;
+    padding: 0.5rem 2rem;
+    font-weight: 600;
+}
+</style>
+<div class="card text-center success-card">
+    <div class="card-body">
+        <h2 class="success-title">Payment Successful!</h2>
+        <p class="card-text">Thank you for your purchase.</p>
+        <p>Your order has been placed successfully.</p>
+        <a href="{{ url_for('home') }}" class="btn btn-success success-btn">Return to Home</a>
     </div>
 </div>
 {% endblock %}

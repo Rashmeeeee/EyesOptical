@@ -1,56 +1,56 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="text-center">eSewa Payment Request</h3>
-                </div>
-                <div class="card-body">
-                    <div class="text-center mb-4">
-                        <img src="{{ url_for('static', filename='images/eswea.png') }}" alt="eSewa" style="width: 200px;">
-                        <h4 class="mt-3">Complete Your Payment</h4>
-                        <p class="text-muted">Amount: NPR {{ total_amount }}</p>
-                    </div>
-                    
-                    <!-- eSewa Payment Form -->
-                    <form action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST" id="esewa-form">
-                        <input type="hidden" name="amount" value="{{ amount }}" required>
-                        <input type="hidden" name="tax_amount" value="{{ tax_amount }}" required>
-                        <input type="hidden" name="total_amount" value="{{ total_amount }}" required>
-                        <input type="hidden" name="transaction_uuid" value="{{ transaction_uuid }}" required>
-                        <input type="hidden" name="product_code" value="{{ product_code }}" required>
-                        <input type="hidden" name="product_service_charge" value="0" required>
-                        <input type="hidden" name="product_delivery_charge" value="0" required>
-                        <input type="hidden" name="success_url" value="{{ success_url }}" required>
-                        <input type="hidden" name="failure_url" value="{{ failure_url }}" required>
-                        <input type="hidden" name="signed_field_names" value="total_amount,transaction_uuid,product_code" required>
-                        <input type="hidden" name="signature" value="{{ signature }}" required>
-                        
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-success btn-lg">
-                                <i class="fas fa-credit-card me-2"></i>
-                                Pay with eSewa
-                            </button>
-                        </div>
-                    </form>
-                    
-                    <div class="mt-4 text-center">
-                        <a href="{{ url_for('checkout') }}" class="btn btn-secondary">Back to Checkout</a>
-                    </div>
-                </div>
+<div class="container py-5" style="min-height: 80vh;">
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-5">
+          <div class="text-center mb-4">
+            <img src="{{ url_for('static', filename='images/eswea.png') }}" alt="eSewa" style="width: 90px; border-radius: 16px; box-shadow: 0 2px 8px #00bb2d33;">
+            <h2 class="mt-3 mb-1" style="font-weight: 700; color: #00bb2d;">eSewa Payment</h2>
+            <p class="text-muted mb-0">Secure online payment powered by eSewa</p>
+          </div>
+          <hr>
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="fw-bold">Total Amount:</span>
+              <span class="fs-4 fw-bold" style="color: #00bb2d;">NPR {{ total_amount }}</span>
             </div>
+            <div class="d-flex justify-content-between">
+              <span>Product Code:</span>
+              <span>{{ product_code }}</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span>Transaction ID:</span>
+              <span class="text-break">{{ transaction_uuid }}</span>
+            </div>
+          </div>
+          <form action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST" id="esewa-form">
+            <input type="hidden" name="amount" value="{{ amount }}">
+            <input type="hidden" name="tax_amount" value="{{ tax_amount }}">
+            <input type="hidden" name="total_amount" value="{{ total_amount }}">
+            <input type="hidden" name="transaction_uuid" value="{{ transaction_uuid }}">
+            <input type="hidden" name="product_code" value="{{ product_code }}">
+            <input type="hidden" name="product_service_charge" value="0">
+            <input type="hidden" name="product_delivery_charge" value="0">
+            <input type="hidden" name="success_url" value="{{ success_url }}">
+            <input type="hidden" name="failure_url" value="{{ failure_url }}">
+            <input type="hidden" name="signed_field_names" value="total_amount,transaction_uuid,product_code">
+            <input type="hidden" name="signature" value="{{ signature }}">
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-success btn-lg shadow" style="font-size: 1.2rem; font-weight: 600;">
+                Pay with eSewa
+              </button>
+            </div>
+          </form>
+          <div class="mt-4 text-center">
+            <a href="{{ url_for('checkout') }}" class="btn btn-outline-secondary rounded-pill px-4">
+              Back to Checkout
+            </a>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </div>
-
-<script>
-// Auto-submit the form after a short delay
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
-        document.getElementById('esewa-form').submit();
-    }, 2000); // 2 second delay
-});
-</script>
 {% endblock %} 

@@ -12,6 +12,7 @@
       <th scope="col">Address</th>
       <th scope="col">Phone</th>
       <th scope="col">Product Id</th>
+      <th scope="col">Payment Method</th>
     </tr>
   </thead>
   <tbody>
@@ -26,6 +27,7 @@
           <td>{{order.streetaddress}} {{order.city}} {{order.country}}</td>
           <td>{{order.phone}}</td>
           <td>{{order.product}}</td>
+          <td>{{ order.payment_method|capitalize }}</td>
       </tr>
 {% endfor %}
     

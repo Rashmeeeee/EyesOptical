@@ -50,7 +50,7 @@
    <div class="video-container">
     <div class="flex-box detail-actions hidden" id="try-success" >
         <p>Seems like you like the product</p>
-        <a href="{{ url_for('checkout') }}" class="submit-btn margin-right-16" id="tryon-buy-now-btn">Buy Now</a>
+        <a href="{{ url_for('buynow', id=id) }}" class="submit-btn margin-right-16" id="tryon-buy-now-btn">Buy Now</a>
     </div>
     <div class="flex-box detail-actions hidden" id="try-failed">
         <p>Seems like you are not happy with the product.Do you want to change the product</p>
@@ -154,19 +154,33 @@
 </style>
 
 
-<div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-labelledby="loginRequiredModalLabel" aria-hidden="true">
+<!-- Buy Now Login Modal -->
+<div class="modal fade" id="buyNowLoginModal" tabindex="-1" aria-labelledby="buyNowLoginModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="loginRequiredModalLabel">Login Required</h5>
+                <h5 class="modal-title" id="buyNowLoginModalLabel">Login to Continue Purchase</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                You must be logged in to proceed to checkout. Please log in to continue.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <a href="/login" class="btn btn-primary">Log In</a>
+                <form id="buyNowLoginForm">
+                    <input type="hidden" name="next" value="{{ url_for('buynow', id=id) }}">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn" style="background-color: #36a59f; color: white; padding: 8px 20px; font-size: 14px; border: none; border-radius: 5px; width: 150px;">Login</button>
+                    </div>
+                    <div id="loginError" class="alert alert-danger mt-3" style="display: none;"></div>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign up</a></p>
+                </div>
             </div>
         </div>
     </div>
@@ -178,8 +192,40 @@ $(document).ready(function() {
     $('#tryon-buy-now-btn').click(function(event) {
         {% if not current_user.is_authenticated %}
             event.preventDefault();
-            $('#loginRequiredModal').modal('show');
+            $('#buyNowLoginModal').modal('show');
         {% endif %}
+    });
+
+    // Handle login form submission
+    $('#buyNowLoginForm').submit(function(event) {
+        event.preventDefault();
+        
+        const formData = new FormData(this);
+        const nextUrl = formData.get('next');
+        
+                    $.ajax({
+                url: '{{ url_for("login") }}',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+            success: function(response) {
+                if (response.success) {
+                    // Login successful, redirect to the next URL
+                    window.location.href = nextUrl;
+                } else {
+                    // Show error message
+                    $('#loginError').text(response.message || 'Login failed').show();
+                }
+            },
+            error: function(xhr) {
+                // Show error message
+                $('#loginError').text('Login failed. Please try again.').show();
+            }
+        });
     });
 });
 </script>

@@ -12,13 +12,22 @@
         "What's up?",
         "Yo!",
         "Hey, can you help me?",
-        "How are you?"
+        "How are you?",
+        "Good morning",
+        "Good afternoon",
+        "Good evening",
+        "Hi there",
+        "Hello there",
+        "Hey!",
+        "Greetings",
+        "Welcome"
       ],
       "responses": [
-        "Hey there! Welcome to EyesOptical.",
+        "Hey there! Welcome to EyesOptical - your perfect vision partner! 👓",
         "Hi! How can I help you choose your perfect pair of glasses today?",
-        "Hello! Need help picking the right frame?",
-        "Hey! I'm here to assist you with eyewear shopping."
+        "Hello! Need help picking the right frame for your style?",
+        "Hey! I'm here to assist you with eyewear shopping. What can I help you with?",
+        "Welcome to EyesOptical! Let's find you the perfect glasses! 😎"
       ]
     },
     {
@@ -33,117 +42,46 @@
         "I'm done here",
         "Bye now",
         "That's all for now",
-        "Peace out"
+        "Peace out",
+        "See ya",
+        "Take care",
+        "Have a good day",
+        "Thanks for helping",
+        "I'll be back",
+        "End chat",
+        "Close chat",
+        "Exit"
       ],
       "responses": [
-        "Goodbye! Thanks for visiting EyesOptical.",
-        "See you soon. Don't forget to protect your eyes! 😎",
-        "Bye! Have a stylish day!",
-        "Catch you later, and happy glasses shopping!"
+        "Goodbye! Thanks for visiting EyesOptical. Don't forget to protect your eyes! 👓",
+        "See you soon. Remember, your eyes deserve the best! 😎",
+        "Bye! Have a stylish day with your perfect vision!",
+        "Catch you later, and happy glasses shopping! 👋",
+        "Take care! Your perfect glasses are waiting for you!"
       ]
     },
     {
-      "tag": "order_status",
+      "tag": "about_company",
       "patterns": [
-        "Where's my order?",
-        "Can I track my glasses?",
-        "Order status?",
-        "Track my order",
-        "I want to check my order",
-        "Has my order been shipped?",
-        "What’s the delivery status?",
-        "Is my order on the way?",
-        "Check delivery status",
-        "Can you check my order progress?"
+        "Tell me about EyesOptical",
+        "What is EyesOptical?",
+        "About your company",
+        "Who are you?",
+        "What do you do?",
+        "Tell me about your business",
+        "Company information",
+        "About us",
+        "What's EyesOptical?",
+        "Your company details",
+        "Business information",
+        "What services do you offer?",
+        "Tell me about your store",
+        "About your eyewear business"
       ],
       "responses": [
-        "Sure! Please provide your order ID to check the status.",
-        "I'd be happy to help. Can you give me your order number?",
-        "Let's track that down! What's your order ID?",
-        "Please share the email or order number to check your status."
-      ]
-    },
-    {
-      "tag": "returns_policy",
-      "patterns": [
-        "Can I return the glasses?",
-        "What's your return policy?",
-        "Do you offer refunds?",
-        "How do I return a product?",
-        "Is return available?",
-        "I need to return my purchase",
-        "Your return procedure?",
-        "Refunds available?",
-        "Return terms?",
-        "Is the return free?"
-      ],
-      "responses": [
-        "Yes, we offer easy 7-day returns! Please visit our return policy page for details.",
-        "You can return items within 7 days if they're in original condition.",
-        "Sure! Visit your profile > Orders > Return to initiate a return.",
-        "Yes, we offer refunds on eligible products. Let me guide you."
-      ]
-    },
-    {
-      "tag": "frame_suggestion",
-      "patterns": [
-        "Which frame suits my face?",
-        "Suggest glasses for a round face",
-        "What suits an oval face?",
-        "Help me choose frames",
-        "What type of glasses would fit my face?",
-        "Face shape suggestion",
-        "Can you help with style matching?",
-        "Which shape should I try?",
-        "Best frame for square face?",
-        "I need style advice"
-      ],
-      "responses": [
-        "Round face? Go for rectangular or square frames!",
-        "Oval faces suit almost all frame shapes!",
-        "Let’s find the perfect match for you — want to try the virtual try-on?"
-      ]
-    },
-    {
-      "tag": "lens_options",
-      "patterns": [
-        "Do you have blue light lenses?",
-        "Can I get anti-glare coating?",
-        "Tell me about lens types",
-        "What lens should I choose?",
-        "Do you offer progressive lenses?",
-        "I want prescription lenses",
-        "Do you provide lens power input?",
-        "Can I order just the lens?",
-        "What coatings are available?",
-        "Any UV protection lenses?"
-      ],
-      "responses": [
-        "Yes! We offer blue light, anti-glare, photochromic, and more.",
-        "You can choose coatings and lens type during checkout.",
-        "Need help selecting the right lens? I’m here to guide you!",
-        "We offer prescription, progressive, and standard lenses."
-      ]
-    },
-    {
-      "tag": "payment_methods",
-      "patterns": [
-        "What payment options are there?",
-        "Do you accept PayPal?",
-        "Can I pay with card?",
-        "Is cash on delivery available?",
-        "How do I pay?",
-        "Payment options?",
-        "Do you accept credit cards?",
-        "Is UPI supported?",
-        "Can I pay in installments?",
-        "Can I use digital wallet?"
-      ],
-      "responses": [
-        "We accept cards, PayPal, UPI, and COD in select locations.",
-        "You can pay via Visa, MasterCard, and more. All payments are secure.",
-        "Yes! We support digital wallets and online banking too.",
-        "Pay the way you like — we support multiple payment modes."
+        "EyesOptical is your trusted partner for premium eyewear. We offer a wide range of stylish glasses, sunglasses, and prescription lenses with virtual try-on technology!",
+        "We're EyesOptical - specializing in quality eyewear with the latest styles and advanced lens technology. Your vision is our priority!",
+        "EyesOptical brings you the finest collection of frames and lenses, combining style with cutting-edge virtual try-on technology for the perfect fit!"
       ]
     },
     {
@@ -158,86 +96,398 @@
         "How to try glasses on my face?",
         "Can I use AR to try frames?",
         "Try-on with camera?",
-        "Do you have virtual fitting?"
+        "Do you have virtual fitting?",
+        "Virtual try-on feature",
+        "How to use try-on?",
+        "Try glasses online",
+        "Virtual mirror",
+        "AR try-on",
+        "Camera try-on",
+        "Try frames virtually",
+        "Virtual fitting room",
+        "Online try-on tool",
+        "How does try-on work?"
       ],
       "responses": [
-        "Absolutely! Use our virtual try-on tool — just turn on your camera!",
-        "Yes! Click on any product and hit 'Try On'.",
-        "Try before you buy — use our virtual mirror now!",
-        "Upload a photo or use live camera to try your frames!"
+        "Absolutely! Use our virtual try-on tool - just click 'Try On' on any product and turn on your camera! 📱",
+        "Yes! Click on any product and hit 'Try On' to see how frames look on your face in real-time!",
+        "Try before you buy - use our virtual mirror now! Just allow camera access and see the magic! ✨",
+        "Upload a photo or use live camera to try your frames! It's like having a virtual fitting room! 🎯"
       ]
     },
     {
-      "tag": "support",
+      "tag": "virtual_tryon_help",
       "patterns": [
-        "I need help",
-        "Talk to support",
-        "How can I reach customer care?",
-        "I have an issue",
-        "Can someone assist me?",
-        "Need help with my order",
-        "Your contact info?",
-        "Is there a support email?",
-        "Help me!",
-        "Chat with support"
+        "How does the virtual try-on work?",
+        "Can I try glasses with my camera?",
+        "Is the try-on tool safe?",
+        "Why isn't the try-on working?",
+        "Do I need to allow camera access?",
+        "Try-on not working",
+        "Camera permission for try-on",
+        "Virtual try-on issues",
+        "Try-on tool problems",
+        "How to use virtual try-on?",
+        "Try-on instructions",
+        "Virtual try-on guide",
+        "Try-on troubleshooting",
+        "Camera access for try-on",
+        "Try-on feature help"
       ],
       "responses": [
-        "Sure! You can email us at support@eyesoptical.com or use this chat.",
-        "We’re here to help! Tell me what the issue is.",
-        "Need assistance? I’m all ears!",
-        "You can reach us directly or continue chatting here."
+        "Our virtual try-on uses your camera to show how frames look on you. Just click 'Try On' and allow camera access when prompted! 📸",
+        "If the tool isn't working, please check your browser permissions and try again. Make sure to allow camera access! 🔧",
+        "The virtual try-on is completely safe - we only use your camera to show you how frames look, no data is stored! 🔒"
       ]
     },
     {
-      "tag": "product_inquiry",
+      "tag": "product_categories",
       "patterns": [
-        "What brands do you have?",
+        "What types of glasses do you have?",
+        "Show me different categories",
+        "What categories of eyewear?",
+        "Types of frames available",
+        "What styles do you offer?",
+        "Different types of glasses",
+        "Categories of eyewear",
+        "What frames do you have?",
+        "Show me all categories",
+        "Types of products",
+        "What can I buy?",
+        "Product categories",
+        "Available styles",
+        "Frame categories",
+        "What's available?"
+      ],
+      "responses": [
+        "We offer a wide range including prescription glasses, sunglasses, reading glasses, and computer glasses! 🕶️",
+        "Our categories include men's frames, women's frames, unisex styles, and specialty lenses like blue light protection! 👓",
+        "Choose from classic, modern, vintage, sporty, and luxury frames - we have something for every style and need! ✨"
+      ]
+    },
+    {
+      "tag": "mens_glasses",
+      "patterns": [
         "Show me men's glasses",
-        "Do you have blue frames?",
-        "What are your best sellers?",
-        "Can I see new arrivals?",
-        "Show me sunglasses",
-        "Do you have kids' glasses?",
-        "What is the price range?",
-        "Are there any discounts?"
+        "Men's frames",
+        "Glasses for men",
+        "Men's eyewear",
+        "Frames for men",
+        "Men's styles",
+        "Masculine frames",
+        "Men's collection",
+        "Glasses for guys",
+        "Men's fashion frames",
+        "Men's prescription glasses",
+        "Men's sunglasses",
+        "Men's optical frames",
+        "Men's designer frames",
+        "Men's trendy glasses"
       ],
       "responses": [
-        "We have a wide range of brands and styles! What are you looking for?",
-        "You can browse our best sellers and new arrivals on the home page.",
-        "Yes, we have frames for men, women, and kids. Use the filters to narrow your search.",
-        "Check out our latest discounts and offers on the home page!"
+        "Our men's collection features classic rectangular frames, modern square designs, and trendy round frames! 🕶️",
+        "Men's frames include professional styles, casual options, and luxury designer pieces - browse our collection! 👔",
+        "From business-appropriate to fashion-forward, our men's frames combine style with comfort! 💼"
       ]
     },
     {
-      "tag": "order_modification",
+      "tag": "womens_glasses",
       "patterns": [
-        "Can I change my order?",
-        "How do I update my address?",
-        "Can I add another product to my order?",
-        "I want to cancel my order",
-        "How do I edit my order?"
+        "Show me women's glasses",
+        "Women's frames",
+        "Glasses for women",
+        "Women's eyewear",
+        "Frames for women",
+        "Women's styles",
+        "Feminine frames",
+        "Women's collection",
+        "Glasses for ladies",
+        "Women's fashion frames",
+        "Women's prescription glasses",
+        "Women's sunglasses",
+        "Women's optical frames",
+        "Women's designer frames",
+        "Women's trendy glasses"
       ],
       "responses": [
-        "To modify or cancel your order, please contact our support team as soon as possible.",
-        "You can update your address in your profile before the order is shipped.",
-        "For changes to your order, reach out to us via chat or email."
+        "Our women's collection features elegant cat-eye frames, sophisticated round styles, and trendy oversized designs! 👓",
+        "Women's frames include vintage-inspired, modern minimalist, and bold statement pieces - find your perfect style! ✨",
+        "From delicate wire frames to bold acetate designs, our women's collection has something for every personality! 💎"
       ]
     },
     {
-      "tag": "shipping_info",
+      "tag": "sunglasses",
+      "patterns": [
+        "Do you have sunglasses?",
+        "Show me sunglasses",
+        "Sunglasses collection",
+        "UV protection glasses",
+        "Summer glasses",
+        "Outdoor eyewear",
+        "Sunglasses for men",
+        "Sunglasses for women",
+        "Polarized sunglasses",
+        "Designer sunglasses",
+        "Luxury sunglasses",
+        "Sport sunglasses",
+        "Fashion sunglasses",
+        "Sunglasses with prescription",
+        "Sunglasses brands"
+      ],
+      "responses": [
+        "Yes! We have a fantastic collection of sunglasses with UV protection, polarized lenses, and prescription options! 🕶️",
+        "Our sunglasses include designer brands, sport styles, and fashion-forward options - perfect for every occasion! ☀️",
+        "From classic aviators to trendy oversized frames, our sunglasses offer both style and protection! 🌟"
+      ]
+    },
+    {
+      "tag": "prescription_glasses",
+      "patterns": [
+        "Do you have prescription glasses?",
+        "Prescription frames",
+        "Glasses with prescription",
+        "Prescription eyewear",
+        "Myopia glasses",
+        "Hyperopia glasses",
+        "Astigmatism glasses",
+        "Prescription lenses",
+        "Vision correction glasses",
+        "Prescription optical frames",
+        "Prescription sunglasses",
+        "Reading glasses",
+        "Distance glasses",
+        "Progressive lenses",
+        "Bifocal glasses"
+      ],
+      "responses": [
+        "Absolutely! We offer prescription glasses for all vision needs - myopia, hyperopia, astigmatism, and more! 👓",
+        "Our prescription frames can accommodate single vision, bifocal, and progressive lenses - just upload your prescription! 📋",
+        "From reading glasses to distance vision, we have prescription options for every need and style preference! 🔍"
+      ]
+    },
+    {
+      "tag": "blue_light_glasses",
+      "patterns": [
+        "Do you have blue light glasses?",
+        "Blue light protection",
+        "Computer glasses",
+        "Digital eye strain glasses",
+        "Screen protection glasses",
+        "Blue light blocking",
+        "Computer vision glasses",
+        "Digital protection eyewear",
+        "Blue light filter",
+        "Screen time glasses",
+        "Digital eye care",
+        "Computer work glasses",
+        "Blue light lenses",
+        "Digital protection lenses",
+        "Screen glasses"
+      ],
+      "responses": [
+        "Yes! Our blue light glasses protect your eyes from digital screens and reduce eye strain! 💻",
+        "Perfect for computer work, gaming, and screen time - our blue light glasses filter harmful blue light! 🛡️",
+        "Reduce digital eye strain with our specially coated lenses that block blue light from screens! 👁️"
+      ]
+    },
+    {
+      "tag": "lens_options",
+      "patterns": [
+        "What lens options do you have?",
+        "Tell me about lens types",
+        "What lens should I choose?",
+        "Lens coatings available",
+        "Anti-glare coating",
+        "Photochromic lenses",
+        "Progressive lenses",
+        "Bifocal lenses",
+        "Single vision lenses",
+        "Lens materials",
+        "High index lenses",
+        "Polycarbonate lenses",
+        "Trivex lenses",
+        "Lens treatments",
+        "Lens protection"
+      ],
+      "responses": [
+        "We offer single vision, bifocal, progressive, photochromic, and blue light lenses with various coatings! 🔍",
+        "Choose from anti-glare, anti-scratch, UV protection, and photochromic coatings for optimal vision! ✨",
+        "Our lens options include high-index, polycarbonate, and Trivex materials for different prescription needs! 💎"
+      ]
+    },
+    {
+      "tag": "face_shape_advice",
+      "patterns": [
+        "Which frame suits my face?",
+        "Suggest glasses for round face",
+        "What suits an oval face?",
+        "Help me choose frames",
+        "What type of glasses would fit my face?",
+        "Face shape suggestion",
+        "Can you help with style matching?",
+        "Which shape should I try?",
+        "Best frame for square face?",
+        "I need style advice",
+        "Frame for heart shaped face",
+        "Glasses for diamond face",
+        "Face shape guide",
+        "Style consultation",
+        "Frame fitting advice"
+      ],
+      "responses": [
+        "Round face? Go for rectangular or square frames! Oval faces suit almost all shapes! 🎯",
+        "Square faces look great in round or oval frames, while heart-shaped faces suit cat-eye or round styles! 💫",
+        "Let's find the perfect match for you - want to try our virtual try-on to see different styles? 📱"
+      ]
+    },
+    {
+      "tag": "price_inquiry",
+      "patterns": [
+        "What are your prices?",
+        "How much do glasses cost?",
+        "Price range",
+        "Are glasses expensive?",
+        "What's the cost?",
+        "Pricing information",
+        "How much for frames?",
+        "Lens pricing",
+        "Total cost",
+        "Price list",
+        "Cost of prescription glasses",
+        "Sunglasses price",
+        "Frame prices",
+        "Lens costs",
+        "Budget options"
+      ],
+      "responses": [
+        "Our frames start from affordable options to premium designer pieces - there's something for every budget! 💰",
+        "Prices vary by frame style and lens options. Basic frames start around Rs. 1000, premium frames go up to Rs. 5000+! 💎",
+        "We offer competitive pricing with quality materials. Check individual product pages for specific prices! 🏷️"
+      ]
+    },
+    {
+      "tag": "discounts_offers",
+      "patterns": [
+        "Do you have any discounts?",
+        "Are there any offers?",
+        "Special deals",
+        "Promotional offers",
+        "Sale going on?",
+        "Discount codes",
+        "Coupon codes",
+        "Special pricing",
+        "Limited time offers",
+        "Seasonal sales",
+        "Bulk discounts",
+        "Student discounts",
+        "First time buyer offers",
+        "Loyalty discounts",
+        "Holiday sales"
+      ],
+      "responses": [
+        "Yes! We regularly offer seasonal discounts, first-time buyer specials, and bulk purchase deals! 🎉",
+        "Check our homepage for current promotions, and don't forget to sign up for exclusive member offers! 💝",
+        "We have special student discounts and loyalty rewards for returning customers! 🎓"
+      ]
+    },
+    {
+      "tag": "payment_methods",
+      "patterns": [
+        "What payment options are there?",
+        "How can I pay?",
+        "Payment methods",
+        "Do you accept cards?",
+        "Cash on delivery?",
+        "Online payment",
+        "Credit card payment",
+        "Debit card payment",
+        "Digital payment",
+        "eSewa payment",
+        "Khalti payment",
+        "Bank transfer",
+        "Payment security",
+        "Secure payment",
+        "Payment options"
+      ],
+      "responses": [
+        "We accept eSewa, Khalti, credit/debit cards, and cash on delivery in select areas! 💳",
+        "All online payments are secure and encrypted. We support major payment gateways for your safety! 🔒",
+        "Pay the way you like - eSewa, Khalti, cards, or COD. All payments are processed securely! 💰"
+      ]
+    },
+    {
+      "tag": "shipping_delivery",
       "patterns": [
         "How long does delivery take?",
-        "What are your shipping charges?",
-        "Do you deliver outside Kathmandu?",
-        "Is there free shipping?",
-        "Can I track my shipment?",
-        "When will my order arrive?"
+        "Shipping time",
+        "Delivery duration",
+        "When will I get my order?",
+        "Shipping charges",
+        "Free shipping?",
+        "Delivery cost",
+        "Shipping policy",
+        "Delivery areas",
+        "Express delivery",
+        "Standard shipping",
+        "Track my order",
+        "Delivery status",
+        "Shipping information",
+        "Order tracking"
       ],
       "responses": [
-        "Delivery usually takes 2-5 business days within Kathmandu.",
-        "Shipping charges depend on your location and order amount.",
-        "We offer free shipping on orders above a certain amount. Check our shipping policy for details.",
-        "You can track your shipment using the order status feature."
+        "Delivery takes 2-5 business days within Kathmandu, 5-10 days for other cities! 🚚",
+        "We offer free shipping on orders above Rs. 2000. Standard delivery charges apply for smaller orders! 📦",
+        "You can track your order using the order status feature in your account! 📱"
+      ]
+    },
+    {
+      "tag": "order_tracking",
+      "patterns": [
+        "Where's my order?",
+        "Can I track my glasses?",
+        "Order status?",
+        "Track my order",
+        "I want to check my order",
+        "Has my order been shipped?",
+        "What's the delivery status?",
+        "Is my order on the way?",
+        "Check delivery status",
+        "Can you check my order progress?",
+        "Order tracking number",
+        "Shipping status",
+        "Order confirmation",
+        "Delivery tracking",
+        "Order update"
+      ],
+      "responses": [
+        "Sure! Please provide your order ID to check the status, or log into your account to track! 📋",
+        "I'd be happy to help. Can you give me your order number or email address? 🔍",
+        "Let's track that down! What's your order ID? You can also check in your account dashboard! 📊"
+      ]
+    },
+    {
+      "tag": "returns_refunds",
+      "patterns": [
+        "Can I return the glasses?",
+        "What's your return policy?",
+        "Do you offer refunds?",
+        "How do I return a product?",
+        "Is return available?",
+        "I need to return my purchase",
+        "Your return procedure?",
+        "Refunds available?",
+        "Return terms?",
+        "Is the return free?",
+        "Return policy",
+        "Refund policy",
+        "Exchange policy",
+        "Return shipping",
+        "Return conditions"
+      ],
+      "responses": [
+        "Yes, we offer easy 7-day returns! Items must be in original condition with all packaging! 📦",
+        "You can return items within 7 days if they're in original condition. Visit your profile > Orders > Return! 🔄",
+        "We offer refunds on eligible products. Return shipping is free for defective items! 💰"
       ]
     },
     {
@@ -248,12 +498,21 @@
         "What is PD?",
         "Do you offer lens fitting?",
         "Can I get help with my prescription?",
-        "How do I know my lens power?"
+        "How do I know my lens power?",
+        "Prescription upload",
+        "Lens power measurement",
+        "PD measurement",
+        "Prescription verification",
+        "Lens fitting service",
+        "Prescription requirements",
+        "Eye exam needed?",
+        "Prescription validity",
+        "Lens power calculation"
       ],
       "responses": [
-        "You can upload your prescription during checkout or in your profile.",
-        "If you need help with your prescription, our opticians are here to assist!",
-        "PD stands for Pupillary Distance. If you don't know it, we can help you measure it."
+        "You can upload your prescription during checkout or in your profile. We'll verify it with our opticians! 📋",
+        "If you need help with your prescription, our opticians are here to assist! Just contact us! 👨‍⚕️",
+        "PD stands for Pupillary Distance. If you don't know it, we can help you measure it during checkout! 📏"
       ]
     },
     {
@@ -264,42 +523,447 @@
         "How do I update my profile?",
         "Can I see my order history?",
         "How do I log out?",
-        "How do I change my email?"
+        "How do I change my email?",
+        "Account creation",
+        "Password reset",
+        "Profile update",
+        "Order history",
+        "Account settings",
+        "User account",
+        "Login help",
+        "Registration",
+        "Account management"
       ],
       "responses": [
-        "You can create an account or log in from the top right menu.",
-        "To reset your password, use the 'Forgot Password' link on the login page.",
-        "Your order history and profile can be accessed from your account dashboard."
+        "You can create an account or log in from the top right menu. It's quick and easy! 👤",
+        "To reset your password, use the 'Forgot Password' link on the login page! 🔐",
+        "Your order history and profile can be accessed from your account dashboard! 📊"
       ]
     },
     {
-      "tag": "virtual_tryon_help",
+      "tag": "size_fitting",
       "patterns": [
-        "How does the virtual try-on work?",
-        "Can I try glasses with my camera?",
-        "Is the try-on tool safe?",
-        "Why isn't the try-on working?",
-        "Do I need to allow camera access?"
+        "How do I know my frame size?",
+        "Frame measurement",
+        "Glasses size guide",
+        "How to measure frame size?",
+        "Frame fitting guide",
+        "Size chart",
+        "Frame dimensions",
+        "Bridge size",
+        "Temple length",
+        "Lens width",
+        "Frame measurements",
+        "Size guide",
+        "Fitting instructions",
+        "Frame sizing",
+        "Measurement guide"
       ],
       "responses": [
-        "Our virtual try-on uses your camera to show how frames look on you. Just click 'Try On' and allow camera access.",
-        "If the tool isn't working, please check your browser permissions and try again."
+        "Our virtual try-on tool helps determine the perfect fit! You can also check our size guide for measurements! 📏",
+        "Frame sizes include lens width, bridge width, and temple length. Our try-on tool shows you the best fit! 🎯",
+        "Use our size guide or virtual try-on to find your perfect frame dimensions! 📐"
       ]
     },
     {
-      "tag": "payment_issues",
+      "tag": "care_maintenance",
       "patterns": [
-        "My payment failed",
-        "Can I pay with Khalti?",
-        "Is payment secure?",
-        "Why was my card declined?",
-        "Do you accept cash on delivery?",
-        "How do I use a promo code?"
+        "How to clean my glasses?",
+        "Glasses care tips",
+        "Frame maintenance",
+        "Lens cleaning",
+        "How to store glasses?",
+        "Glasses protection",
+        "Care instructions",
+        "Maintenance tips",
+        "Cleaning products",
+        "Frame repair",
+        "Lens scratch repair",
+        "Glasses storage",
+        "Care guide",
+        "Maintenance advice",
+        "Cleaning methods"
       ],
       "responses": [
-        "We accept multiple payment methods including Khalti, cards, and cash on delivery in select areas.",
-        "If your payment failed, please try again or contact your bank.",
-        "All payments are processed securely. For promo codes, enter them at checkout."
+        "Clean your glasses with a microfiber cloth and lens cleaner. Avoid paper towels or harsh chemicals! 🧽",
+        "Store glasses in a protective case when not in use. Regular cleaning keeps them looking great! 📦",
+        "For scratches or damage, bring them to our store for professional repair services! 🔧"
+      ]
+    },
+    {
+      "tag": "warranty_service",
+      "patterns": [
+        "Do you offer warranty?",
+        "Warranty period",
+        "Frame warranty",
+        "Lens warranty",
+        "Repair service",
+        "Warranty coverage",
+        "Service warranty",
+        "Manufacturer warranty",
+        "Extended warranty",
+        "Warranty terms",
+        "Repair policy",
+        "Service coverage",
+        "Warranty claim",
+        "Defect warranty",
+        "Quality guarantee"
+      ],
+      "responses": [
+        "We offer 1-year warranty on frames and 2-year warranty on lenses against manufacturing defects! 🛡️",
+        "Our warranty covers manufacturing defects. Normal wear and tear are not covered! 📋",
+        "For warranty claims, bring your glasses and receipt to our store for assessment! 🔍"
+      ]
+    },
+    {
+      "tag": "store_location",
+      "patterns": [
+        "Where is your store?",
+        "Store location",
+        "Physical store",
+        "Store address",
+        "Visit store",
+        "Store hours",
+        "Opening hours",
+        "Store contact",
+        "Store phone",
+        "Store directions",
+        "Nearest store",
+        "Store map",
+        "Store information",
+        "Visit us",
+        "Store details"
+      ],
+      "responses": [
+        "Our main store is located in Kathmandu. Check our contact page for exact address and hours! 📍",
+        "Visit our store for professional fitting and consultation. We're open Monday-Saturday! 🏪",
+        "You can find our store details and contact information on our website! 📞"
+      ]
+    },
+    {
+      "tag": "contact_support",
+      "patterns": [
+        "I need help",
+        "Talk to support",
+        "How can I reach customer care?",
+        "I have an issue",
+        "Can someone assist me?",
+        "Need help with my order",
+        "Your contact info?",
+        "Is there a support email?",
+        "Help me!",
+        "Chat with support",
+        "Customer service",
+        "Support team",
+        "Contact us",
+        "Get help",
+        "Customer care"
+      ],
+      "responses": [
+        "Sure! You can email us at support@eyesoptical.com or use this chat for immediate help! 📧",
+        "We're here to help! Tell me what the issue is and I'll assist you! 🤝",
+        "Need assistance? I'm all ears! You can also reach our support team directly! 📞"
+      ]
+    },
+    {
+      "tag": "product_recommendations",
+      "patterns": [
+        "What do you recommend?",
+        "Best selling glasses",
+        "Popular frames",
+        "Trendy glasses",
+        "What's popular?",
+        "Recommendations",
+        "Best frames",
+        "Popular styles",
+        "Trending glasses",
+        "Customer favorites",
+        "Most popular",
+        "Best sellers",
+        "Recommended frames",
+        "Trendy styles",
+        "Popular choices"
+      ],
+      "responses": [
+        "Our bestsellers include classic rectangular frames, trendy round styles, and blue light protection glasses! ⭐",
+        "Popular choices are cat-eye frames for women, aviator styles for men, and computer glasses for everyone! 🏆",
+        "Trending now: oversized frames, transparent acetate, and vintage-inspired designs! ✨"
+      ]
+    },
+    {
+      "tag": "gift_cards",
+      "patterns": [
+        "Do you have gift cards?",
+        "Gift vouchers",
+        "Gift certificates",
+        "Gift options",
+        "Present for someone",
+        "Gift for glasses",
+        "Gift card purchase",
+        "Gift voucher",
+        "Gift certificate",
+        "Gift options",
+        "Present ideas",
+        "Gift for vision",
+        "Gift card balance",
+        "Gift card redemption",
+        "Gift services"
+      ],
+      "responses": [
+        "Yes! Gift cards are perfect for giving the gift of perfect vision! Available in various denominations! 🎁",
+        "Our gift cards can be used for any product - frames, lenses, or accessories! Perfect for any occasion! 💝",
+        "Give the gift of style and vision with our gift cards - they never expire! 🎯"
+      ]
+    },
+    {
+      "tag": "accessories",
+      "patterns": [
+        "Do you have accessories?",
+        "Glasses accessories",
+        "Cleaning products",
+        "Glasses cases",
+        "Microfiber cloths",
+        "Lens cleaners",
+        "Glasses chains",
+        "Anti-slip pads",
+        "Glasses repair kit",
+        "Accessories for glasses",
+        "Cleaning supplies",
+        "Glasses care products",
+        "Protective cases",
+        "Glasses maintenance",
+        "Care accessories"
+      ],
+      "responses": [
+        "Yes! We offer cleaning kits, protective cases, microfiber cloths, and anti-slip pads! 🧽",
+        "Our accessories include professional cleaning solutions, stylish cases, and repair kits! 🛠️",
+        "Keep your glasses in perfect condition with our range of care accessories! ✨"
+      ]
+    },
+    {
+      "tag": "bulk_orders",
+      "patterns": [
+        "Do you do bulk orders?",
+        "Corporate orders",
+        "Business orders",
+        "Multiple pairs",
+        "Bulk purchase",
+        "Corporate eyewear",
+        "Business glasses",
+        "Multiple frames",
+        "Bulk discounts",
+        "Corporate deals",
+        "Business accounts",
+        "Bulk pricing",
+        "Corporate accounts",
+        "Business pricing",
+        "Volume orders"
+      ],
+      "responses": [
+        "Yes! We offer special pricing for bulk orders and corporate accounts! Contact us for details! 🏢",
+        "Perfect for businesses! We provide corporate eyewear solutions with volume discounts! 💼",
+        "Bulk orders get special pricing and priority service. Great for corporate gifts or team uniforms! 🎯"
+      ]
+    },
+    {
+      "tag": "emergency_repair",
+      "patterns": [
+        "Can you fix my glasses?",
+        "Glasses repair",
+        "Frame repair",
+        "Lens replacement",
+        "Emergency repair",
+        "Quick fix",
+        "Broken glasses",
+        "Damaged frames",
+        "Lens scratch",
+        "Frame adjustment",
+        "Tighten screws",
+        "Replace nose pads",
+        "Emergency service",
+        "Quick repair",
+        "Urgent fix"
+      ],
+      "responses": [
+        "Yes! We offer quick repair services for minor issues like loose screws and adjustments! 🔧",
+        "For broken frames or scratched lenses, we can assess and provide repair or replacement options! 🛠️",
+        "Emergency repairs like tightening screws or adjusting frames can often be done while you wait! ⚡"
+      ]
+    },
+    {
+      "tag": "seasonal_collections",
+      "patterns": [
+        "Do you have seasonal collections?",
+        "Summer glasses",
+        "Winter frames",
+        "Seasonal styles",
+        "New collections",
+        "Latest styles",
+        "Seasonal trends",
+        "Summer eyewear",
+        "Winter eyewear",
+        "Trendy collections",
+        "New arrivals",
+        "Latest frames",
+        "Seasonal fashion",
+        "Trending styles",
+        "New releases"
+      ],
+      "responses": [
+        "Yes! We update our collections seasonally with the latest trends and styles! 🌟",
+        "Check out our new arrivals for the latest seasonal styles and trending frames! 🆕",
+        "We regularly add new collections to keep up with fashion trends and seasonal needs! ✨"
+      ]
+    },
+    {
+      "tag": "loyalty_program",
+      "patterns": [
+        "Do you have a loyalty program?",
+        "Rewards program",
+        "Member benefits",
+        "Loyalty points",
+        "Reward points",
+        "Member discounts",
+        "Loyalty rewards",
+        "Customer rewards",
+        "Points system",
+        "Member program",
+        "Loyalty benefits",
+        "Reward system",
+        "Member perks",
+        "Customer loyalty",
+        "Points program"
+      ],
+      "responses": [
+        "Yes! Join our loyalty program to earn points on every purchase and get exclusive member discounts! 🎯",
+        "Members get special offers, early access to sales, and points that can be redeemed for discounts! 💎",
+        "Our loyalty program rewards repeat customers with points, exclusive deals, and VIP treatment! 👑"
+      ]
+    },
+    {
+      "tag": "appointment_booking",
+      "patterns": [
+        "Can I book an appointment?",
+        "Schedule consultation",
+        "Book fitting",
+        "Appointment booking",
+        "Schedule visit",
+        "Book consultation",
+        "Eye exam appointment",
+        "Fitting appointment",
+        "Consultation booking",
+        "Schedule eye test",
+        "Book eye exam",
+        "Appointment system",
+        "Schedule service",
+        "Book visit",
+        "Consultation appointment"
+      ],
+      "responses": [
+        "Yes! Book an appointment for professional fitting, consultation, or eye exams! 📅",
+        "Schedule a consultation to get expert advice on frame selection and lens options! 👨‍⚕️",
+        "Book your appointment online or call us to schedule a personalized fitting session! 📞"
+      ]
+    },
+    {
+      "tag": "online_vs_store",
+      "patterns": [
+        "Should I buy online or visit store?",
+        "Online vs store purchase",
+        "Buy online or in store?",
+        "Online shopping vs store",
+        "Virtual vs physical store",
+        "Online purchase benefits",
+        "Store visit benefits",
+        "Online vs offline",
+        "Digital vs physical",
+        "Online convenience",
+        "Store experience",
+        "Online advantages",
+        "Store advantages",
+        "Shopping options",
+        "Purchase methods"
+      ],
+      "responses": [
+        "Online shopping offers convenience and virtual try-on, while store visits provide professional fitting and immediate assistance! 🛒",
+        "Use our virtual try-on online, then visit our store for professional fitting and expert advice! 💻🏪",
+        "Online for browsing and virtual try-on, store for personalized fitting and consultation! 🎯"
+      ]
+    },
+    {
+      "tag": "quality_assurance",
+      "patterns": [
+        "How do you ensure quality?",
+        "Quality standards",
+        "Product quality",
+        "Quality assurance",
+        "Quality control",
+        "Quality guarantee",
+        "Quality standards",
+        "Product testing",
+        "Quality check",
+        "Quality verification",
+        "Standards compliance",
+        "Quality policy",
+        "Quality measures",
+        "Quality assurance",
+        "Quality commitment"
+      ],
+      "responses": [
+        "All our products meet international quality standards and come with manufacturer warranties! 🏆",
+        "We carefully select our suppliers and test all products to ensure premium quality! ✅",
+        "Quality is our priority - every product undergoes strict quality checks before reaching you! 💎"
+      ]
+    },
+    {
+      "tag": "environmental_commitment",
+      "patterns": [
+        "Are you environmentally friendly?",
+        "Eco-friendly products",
+        "Environmental policy",
+        "Green practices",
+        "Sustainable products",
+        "Eco-conscious",
+        "Environmental commitment",
+        "Green initiatives",
+        "Sustainable practices",
+        "Eco-friendly frames",
+        "Environmental responsibility",
+        "Green business",
+        "Sustainability",
+        "Eco practices",
+        "Environmental care"
+      ],
+      "responses": [
+        "We're committed to sustainability and offer eco-friendly frame options made from recycled materials! 🌱",
+        "Our packaging is recyclable and we support environmental initiatives! ♻️",
+        "We're working towards a greener future with sustainable practices and eco-friendly products! 🌍"
+      ]
+    },
+    {
+      "tag": "thank_you",
+      "patterns": [
+        "Thank you",
+        "Thanks",
+        "Thank you so much",
+        "Thanks a lot",
+        "Appreciate it",
+        "Thank you very much",
+        "Thanks for helping",
+        "Grateful",
+        "Thank you for your help",
+        "Thanks for the information",
+        "Appreciate your help",
+        "Thank you for assistance",
+        "Thanks for support",
+        "Grateful for help",
+        "Thank you kindly"
+      ],
+      "responses": [
+        "You're very welcome! Happy to help you find your perfect glasses! 😊",
+        "My pleasure! Don't hesitate to ask if you need anything else! 🤝",
+        "You're welcome! Enjoy shopping for your perfect eyewear! 👓",
+        "Anytime! I'm here whenever you need assistance! 💫"
       ]
     }
   ]
