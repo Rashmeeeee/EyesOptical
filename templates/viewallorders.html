@@ -2,35 +2,129 @@
 
 {% extends "adminlayout.html" %}
 {% block content%}
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Order Number</th>
-      <th scope="col">First Name</th>
-      <th scope="col">Last Name</th>
-      <th scope="col">Email</th>
-      <th scope="col">Address</th>
-      <th scope="col">Phone</th>
-      <th scope="col">Product Id</th>
-      <th scope="col">Payment Method</th>
-    </tr>
-  </thead>
-  <tbody>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">All Orders</h2>
+            
+            {% if orders %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">Order #</th>
+                            <th scope="col">Customer Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Phone</th>
+                            <th scope="col">Address</th>
+                            <th scope="col">Product ID</th>
+                            <th scope="col">Payment Method</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td><strong>#{{order.id}}</strong></td>
+                            <td>{{order.firstname}} {{order.lastname}}</td>
+                            <td>{{order.email}}</td>
+                            <td>{{order.phone}}</td>
+                            <td>{{order.streetaddress}}, {{order.city}}, {{order.country}}</td>
+                            <td>{{order.product}}</td>
+                            <td>
+                                <span class="badge {% if order.payment_method == 'cod' %}bg-warning{% else %}bg-success{% endif %}">
+                                    {{ order.payment_method|upper }}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger btn-sm" 
+                                        onclick="confirmDelete({{order.id}}, '{{order.firstname}} {{order.lastname}}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No orders found.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteOrderModal" tabindex="-1" aria-labelledby="deleteOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteOrderModalLabel">
+                    <i class="fas fa-exclamation-triangle"></i> Confirm Delete
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the order for <strong id="customerName"></strong>?</p>
+                <p class="text-muted">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="#" id="confirmDeleteBtn" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Delete Order
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table th {
+        font-weight: 600;
+        background-color: #343a40;
+        color: white;
+    }
     
-    {% for order in orders %}
+    .badge {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+    }
     
-      <tr>
-          <th scope="row">{{order.id}}</th>
-          <td>{{order.firstname}}</td>
-          <td>{{order.lastname}}</td>
-          <td>{{order.email}}</td>
-          <td>{{order.streetaddress}} {{order.city}} {{order.country}}</td>
-          <td>{{order.phone}}</td>
-          <td>{{order.product}}</td>
-          <td>{{ order.payment_method|capitalize }}</td>
-      </tr>
-{% endfor %}
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
     
-  </tbody>
-</table>
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .modal-header {
+        border-bottom: none;
+    }
+    
+    .modal-footer {
+        border-top: none;
+    }
+</style>
+
+<script>
+function confirmDelete(orderId, customerName) {
+    // Set the customer name in the modal
+    document.getElementById('customerName').textContent = customerName;
+    
+    // Set the delete URL
+    document.getElementById('confirmDeleteBtn').href = '/delete_order/' + orderId;
+    
+    // Show the modal
+    var deleteModal = new bootstrap.Modal(document.getElementById('deleteOrderModal'));
+    deleteModal.show();
+}
+</script>
+
 {% endblock %}

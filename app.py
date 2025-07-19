@@ -109,6 +109,33 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"User({self.id}{self.firstname},{self.email},{self.password})"
+
+
+class Contact(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(50), nullable=False)
+    phone = db.Column(db.String(15), nullable=False)
+    subject = db.Column(db.String(100), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    hear_about = db.Column(db.String(50), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    is_read = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return f"Contact({self.id},{self.first_name} {self.last_name},{self.email},{self.subject})"
+
+
+class CartItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False, default=1)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __repr__(self):
+        return f"CartItem({self.id},{self.user_id},{self.product_id},{self.quantity})"
 # eSewa Configuration
 # eSewa integration for payment processing
 # Test product code: EPAYTEST
@@ -201,6 +228,17 @@ def esewa_success():
                 print(f"✅ Customer: {order.firstname} {order.lastname}")
                 print(f"✅ Product ID: {order.product}")
                 print(f"✅ Payment Method: {order.payment_method}")
+                
+                # Clear cart after successful single product order
+                if current_user.is_authenticated:
+                    CartItem.query.filter_by(user_id=current_user.id).delete()
+                    db.session.commit()
+                    print(f"✅ Database cart cleared for user {current_user.id}")
+                
+                # Always clear session cart
+                session['cart'] = {}
+                session.modified = True  # Mark session as modified
+                print(f"✅ Session cart cleared. Cart count: {len(session.get('cart', {}))}")
         else:
             # Cart order
             cart = pending.get('cart', {})
@@ -221,8 +259,17 @@ def esewa_success():
                     db.session.add(order)
             db.session.commit()
             print(f"✅ Cart eSewa orders saved successfully!")
-            # Clear the cart from session
+            
+            # Clear cart after successful order
+            if current_user.is_authenticated:
+                CartItem.query.filter_by(user_id=current_user.id).delete()
+                db.session.commit()
+                print(f"✅ Database cart cleared for user {current_user.id}")
+            
+            # Always clear session cart
             session['cart'] = {}
+            session.modified = True  # Mark session as modified
+            print(f"✅ Session cart cleared. Cart count: {len(session.get('cart', {}))}")
         
         # Clear the pending order from session
         session.pop('pending_order', None)
@@ -254,10 +301,19 @@ def login():
             user = User.query.filter_by(email=email).first()
             if user and check_password_hash(user.password, password):
                 login_user(user, remember=True)
+                
+                # Restore user's cart from database to session
+                cart_items = CartItem.query.filter_by(user_id=user.id).all()
+                if cart_items:
+                    session['cart'] = {}
+                    for item in cart_items:
+                        session['cart'][str(item.product_id)] = item.quantity
+                    print(f"Cart restored for user {user.id} with {len(cart_items)} items")
+                
                 if next_url and next_url.startswith('/'):
                     return jsonify({'success': True, 'redirect': next_url})
                 else:
-                    return jsonify({'success': True, 'redirect': url_for('home')})
+                    return jsonify({'success': True, 'redirect': url_for('home') + '?showFeedback=true'})
             else:
                 return jsonify({'success': False, 'message': 'Login unsuccessful. Please check email and password.'})
     
@@ -266,6 +322,15 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and check_password_hash(user.password, form.password.data):
             login_user(user, remember=True)
+            
+            # Restore user's cart from database to session
+            cart_items = CartItem.query.filter_by(user_id=user.id).all()
+            if cart_items:
+                session['cart'] = {}
+                for item in cart_items:
+                    session['cart'][str(item.product_id)] = item.quantity
+                print(f"Cart restored for user {user.id} with {len(cart_items)} items")
+            
             next_post = request.form.get('next')
             if next_post and next_post.startswith('/'):
                 return redirect(next_post)
@@ -282,6 +347,30 @@ def login():
 @app.route("/about")
 def about():
     return render_template("about.html")
+
+
+@app.route("/submit_feedback", methods=['POST'])
+@login_required
+def submit_feedback():
+    try:
+        data = request.get_json()
+        
+        contact = Contact(
+            first_name=data['firstName'],
+            last_name=data['lastName'],
+            email=data['email'],
+            phone=data['phone'],
+            subject=data['subject'],
+            message=data['message'],
+            hear_about=data['hearAbout']
+        )
+        
+        db.session.add(contact)
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'Feedback submitted successfully!'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 
 @app.route("/signup", methods=["GET", "POST"])
@@ -382,7 +471,18 @@ def checkout():
                 )
                 db.session.add(order)
             db.session.commit()
+            
+            # Clear cart after successful order
+            if current_user.is_authenticated:
+                CartItem.query.filter_by(user_id=current_user.id).delete()
+                db.session.commit()
+                print(f"✅ Database cart cleared for user {current_user.id}")
+            
+            # Always clear session cart
             session['cart'] = {}
+            session.modified = True  # Mark session as modified
+            print(f"✅ Session cart cleared. Cart count: {len(session.get('cart', {}))}")
+                
             flash("Order Successful", category="success")
             return redirect(url_for('home'))
         elif payment_method == 'esewa':
@@ -479,10 +579,66 @@ def addproduct():
 @app.route("/viewallorders")
 @login_required
 def viewAllOrders():
-
-    orders = Order.query.all()
+    if not current_user.isSuperAdmin:
+        flash('Access denied. Admins only.', category='danger')
+        return redirect(url_for('home'))
+    
+    orders = Order.query.order_by(Order.id.desc()).all()
     print(orders)
     return render_template("viewallorders.html", orders=orders)
+
+
+@app.route("/delete_order/<int:id>")
+@login_required
+def delete_order(id):
+    if not current_user.isSuperAdmin:
+        flash('Access denied. Admins only.', category='danger')
+        return redirect(url_for('home'))
+    
+    order = Order.query.get_or_404(id)
+    db.session.delete(order)
+    db.session.commit()
+    flash('Order deleted successfully.', 'success')
+    return redirect(url_for('viewAllOrders'))
+
+
+@app.route("/viewcontacts")
+@login_required
+def viewContacts():
+    if not current_user.isSuperAdmin:
+        flash('Access denied. Admins only.', category='danger')
+        return redirect(url_for('home'))
+    
+    contacts = Contact.query.order_by(Contact.created_at.desc()).all()
+    return render_template("viewcontacts.html", contacts=contacts)
+
+
+@app.route("/mark_contact_read/<int:id>")
+@login_required
+def mark_contact_read(id):
+    if not current_user.isSuperAdmin:
+        flash('Access denied. Admins only.', category='danger')
+        return redirect(url_for('home'))
+    
+    contact = Contact.query.get_or_404(id)
+    contact.is_read = True
+    db.session.commit()
+    flash('Message marked as read.', 'success')
+    return redirect(url_for('viewContacts'))
+
+
+@app.route("/delete_contact/<int:id>")
+@login_required
+def delete_contact(id):
+    if not current_user.isSuperAdmin:
+        flash('Access denied. Admins only.', category='danger')
+        return redirect(url_for('home'))
+    
+    contact = Contact.query.get_or_404(id)
+    db.session.delete(contact)
+    db.session.commit()
+    flash('Message deleted successfully.', 'success')
+    return redirect(url_for('viewContacts'))
 
 
 @app.route("/adminviewproduct")
@@ -634,6 +790,9 @@ def admin_logout():
 @app.route('/user_logout', methods=['GET', 'POST'])
 @login_required
 def user_logout():
+    # Clear session cart only (keep database cart for user)
+    session.pop('cart', None)
+    
     logout_user()
     print("User logged out.")
     return redirect(url_for('home'))
@@ -642,6 +801,11 @@ def user_logout():
 @login_mananger.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+@app.context_processor
+def inject_cart_count():
+    return {'get_cart_count': get_cart_count}
 
 
 @app.route('/snapshot/')
@@ -707,11 +871,18 @@ def chat():
 
 
 def get_cart():
+    # Always use session cart (simpler and consistent)
     if 'cart' not in session:
         session['cart'] = {}
     return session['cart']
 
+
+def get_cart_count():
+    # Always use session cart for display (simpler and consistent)
+    return len(session.get('cart', {}))
+
 @app.route('/add_to_cart', methods=['POST'])
+@login_required
 def add_to_cart():
     product_id = request.form.get('product_id')
     quantity = request.form.get('quantity', 1)
@@ -720,24 +891,54 @@ def add_to_cart():
     except (ValueError, TypeError):
         flash('Invalid quantity.', 'danger')
         return redirect(request.referrer or url_for('home'))
+    
     product = Product.query.get(product_id)
+    if not product:
+        flash('Product not found.', 'danger')
+        return redirect(request.referrer or url_for('home'))
+    
     try:
         price = int(product.price)
     except (ValueError, TypeError):
         flash('Invalid product price.', 'danger')
         return redirect(request.referrer or url_for('home'))
+    
     buy_now = request.form.get('buy_now')
     if not product_id:
         flash('No product selected.', 'danger')
         return redirect(request.referrer or url_for('home'))
+    
     if quantity < 1:
         quantity = 1
     if quantity > 5:
         quantity = 5
+    
+    # Always update session cart
     cart = get_cart()
     cart[product_id] = quantity
     session['cart'] = cart
+    
+    # Also save to database for logged-in users
+    if current_user.is_authenticated:
+        existing_item = CartItem.query.filter_by(
+            user_id=current_user.id, 
+            product_id=product_id
+        ).first()
+        
+        if existing_item:
+            existing_item.quantity = quantity
+        else:
+            new_item = CartItem(
+                user_id=current_user.id,
+                product_id=product_id,
+                quantity=quantity
+            )
+            db.session.add(new_item)
+        
+        db.session.commit()
+    
     flash('Product added/updated in cart!', 'success')
+    
     if buy_now:
         return redirect(url_for('checkout'))
     else:
@@ -774,11 +975,25 @@ def cart():
 @app.route('/remove_from_cart', methods=['POST'])
 def remove_from_cart():
     product_id = request.form.get('product_id')
+    
+    # Always remove from session cart
     cart = get_cart()
     if product_id in cart:
         del cart[product_id]
         session['cart'] = cart
-        flash('Item removed from cart.', 'success')
+    
+    # Also remove from database for logged-in users
+    if current_user.is_authenticated:
+        cart_item = CartItem.query.filter_by(
+            user_id=current_user.id, 
+            product_id=product_id
+        ).first()
+        
+        if cart_item:
+            db.session.delete(cart_item)
+            db.session.commit()
+    
+    flash('Item removed from cart.', 'success')
     return redirect(url_for('cart'))
 
 @app.route('/buynow/<int:id>', methods=['GET', 'POST'])
@@ -803,6 +1018,18 @@ def buynow(id):
             )
             db.session.add(order)
             db.session.commit()
+            
+            # Clear cart after successful order
+            if current_user.is_authenticated:
+                CartItem.query.filter_by(user_id=current_user.id).delete()
+                db.session.commit()
+                print(f"✅ Database cart cleared for user {current_user.id}")
+            
+            # Always clear session cart
+            session['cart'] = {}
+            session.modified = True  # Mark session as modified
+            print(f"✅ Session cart cleared. Cart count: {len(session.get('cart', {}))}")
+            
             flash("Order Successful", category="success")
             return redirect(url_for('home'))
         # For eSewa, store user info and product in session
@@ -881,6 +1108,18 @@ def checkout_single(id):
             )
             db.session.add(order)
             db.session.commit()
+            
+            # Clear cart after successful order
+            if current_user.is_authenticated:
+                CartItem.query.filter_by(user_id=current_user.id).delete()
+                db.session.commit()
+                print(f"✅ Database cart cleared for user {current_user.id}")
+            
+            # Always clear session cart
+            session['cart'] = {}
+            session.modified = True  # Mark session as modified
+            print(f"✅ Session cart cleared. Cart count: {len(session.get('cart', {}))}")
+            
             flash("Order Successful", category="success")
             return redirect(url_for('home'))
         # For eSewa, store user info and product in session

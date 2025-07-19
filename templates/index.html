@@ -160,6 +160,41 @@
     </div>
 </div>
 
+<!-- Contact Form Login Modal -->
+<div class="modal fade" id="contactLoginModal" tabindex="-1" aria-labelledby="contactLoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #36a59f; color: white;">
+                <h5 class="modal-title" id="contactLoginModalLabel">
+                    <i class="fa fa-user me-2"></i>
+                    Login to Submit Feedback
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="contactLoginForm">
+                    <input type="hidden" name="next" value="{{ request.url }}">
+                    <div class="mb-3">
+                        <label for="contactEmail" class="form-label fw-bold">Email</label>
+                        <input type="email" class="form-control" id="contactEmail" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactPassword" class="form-label fw-bold">Password</label>
+                        <input type="password" class="form-control" id="contactPassword" name="password" required>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn" style="background-color: #36a59f; color: white; padding: 12px 30px; font-size: 16px; border: none; border-radius: 5px; width: 200px; font-weight: 600;">Login</button>
+                    </div>
+                    <div id="contactLoginError" class="alert alert-danger mt-3" style="display: none;"></div>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Don't have an account? <a href="{{ url_for('signup') }}" style="color: #36a59f; text-decoration: none;">Sign up</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 // Check authentication for Get In Touch button
 document.addEventListener('DOMContentLoaded', function() {
@@ -168,13 +203,53 @@ document.addEventListener('DOMContentLoaded', function() {
     
     getInTouchBtn.addEventListener('click', function() {
         if (!isAuthenticated) {
-            // Show login modal
-            $('#chatLoginRequiredModal').modal('show');
+            // Show contact login modal
+            $('#contactLoginModal').modal('show');
         } else {
             // Show feedback modal
             const feedbackModal = new bootstrap.Modal(document.getElementById('feedbackModal'));
             feedbackModal.show();
         }
+    });
+    
+    // Handle contact login form submission
+    document.getElementById('contactLoginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('contactEmail').value;
+        const password = document.getElementById('contactPassword').value;
+        const nextUrl = this.querySelector('input[name="next"]').value;
+        
+        fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&next=${encodeURIComponent(nextUrl)}`
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                // Close login modal
+                const loginModal = bootstrap.Modal.getInstance(document.getElementById('contactLoginModal'));
+                loginModal.hide();
+                
+                // Redirect to the specified URL (which includes showFeedback=true)
+                window.location.href = result.redirect;
+            } else {
+                // Show error message
+                const errorDiv = document.getElementById('contactLoginError');
+                errorDiv.textContent = result.message;
+                errorDiv.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const errorDiv = document.getElementById('contactLoginError');
+            errorDiv.textContent = 'An error occurred during login. Please try again.';
+            errorDiv.style.display = 'block';
+        });
     });
 });
 
@@ -185,21 +260,56 @@ document.getElementById('feedbackForm').addEventListener('submit', function(e) {
     const formData = new FormData(this);
     const data = Object.fromEntries(formData);
     
-    // Here you can add AJAX call to send data to server
-    console.log('Feedback data:', data);
-    
-    // Show success modal
-    const feedbackModal = bootstrap.Modal.getInstance(document.getElementById('feedbackModal'));
-    feedbackModal.hide();
-    
-    // Show success message
-    setTimeout(() => {
-        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-        successModal.show();
-    }, 300);
+    // Send data to server via AJAX
+    fetch('/submit_feedback', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            // Show success modal
+            const feedbackModal = bootstrap.Modal.getInstance(document.getElementById('feedbackModal'));
+            feedbackModal.hide();
+            
+            // Show success message
+            setTimeout(() => {
+                const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                successModal.show();
+            }, 300);
+            
+            // Reset form
+            document.getElementById('feedbackForm').reset();
+        } else {
+            alert('Error: ' + result.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while submitting your feedback.');
+    });
     
     // Reset form
     this.reset();
+});
+
+// Check if user just logged in and show feedback form
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if there's a URL parameter indicating successful login
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('showFeedback') === 'true') {
+        // Show feedback modal
+        setTimeout(() => {
+            const feedbackModal = new bootstrap.Modal(document.getElementById('feedbackModal'));
+            feedbackModal.show();
+        }, 500);
+        
+        // Clean up the URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
 });
 </script>
 

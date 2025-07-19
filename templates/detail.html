@@ -98,6 +98,38 @@
     </div>
 </div>
 
+<!-- Add to Cart Login Modal -->
+<div class="modal fade" id="addToCartLoginModal" tabindex="-1" aria-labelledby="addToCartLoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addToCartLoginModalLabel">Login to Add to Cart</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addToCartLoginForm">
+                    <input type="hidden" name="next" value="{{ request.url }}">
+                    <div class="mb-3">
+                        <label for="addToCartEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="addToCartEmail" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addToCartPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="addToCartPassword" name="password" required>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn" style="background-color: #36a59f; color: white; padding: 8px 20px; font-size: 14px; border: none; border-radius: 5px; width: 150px;">Login</button>
+                    </div>
+                    <div id="addToCartLoginError" class="alert alert-danger mt-3" style="display: none;"></div>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign up</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Styling for Modal -->
 <style>
     .modal-content {
@@ -160,9 +192,10 @@
     }
 </style>
 
-<!-- Script to Handle Buy Now Button Click -->
+<!-- Script to Handle Buy Now and Add to Cart Button Clicks -->
 <script>
     $(document).ready(function() {
+        // Handle Buy Now button click
         $('#buy-now-btn').click(function(event) {
             {% if not current_user.is_authenticated %}
                 event.preventDefault();
@@ -170,7 +203,15 @@
             {% endif %}
         });
 
-        // Handle login form submission
+        // Handle Add to Cart form submission
+        $('.cart-form').submit(function(event) {
+            {% if not current_user.is_authenticated %}
+                event.preventDefault();
+                $('#addToCartLoginModal').modal('show');
+            {% endif %}
+        });
+
+        // Handle Buy Now login form submission
         $('#buyNowLoginForm').submit(function(event) {
             event.preventDefault();
             
@@ -198,6 +239,38 @@
                 error: function(xhr) {
                     // Show error message
                     $('#loginError').text('Login failed. Please try again.').show();
+                }
+            });
+        });
+
+        // Handle Add to Cart login form submission
+        $('#addToCartLoginForm').submit(function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(this);
+            const nextUrl = formData.get('next');
+            
+            $.ajax({
+                url: '{{ url_for("login") }}',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Login successful, redirect to the next URL
+                        window.location.href = nextUrl;
+                    } else {
+                        // Show error message
+                        $('#addToCartLoginError').text(response.message || 'Login failed').show();
+                    }
+                },
+                error: function(xhr) {
+                    // Show error message
+                    $('#addToCartLoginError').text('Login failed. Please try again.').show();
                 }
             });
         });
