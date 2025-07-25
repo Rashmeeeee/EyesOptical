@@ -22,11 +22,26 @@
 							<div class="grid-item">
 								<div class="grid-img">
 									<img src="{{product.images}}">
+									{% if product.has_discount and product.discounted_price > 0 %}
+									<div class="discount-badge">
+										<span class="discount-text">
+											{% set discount_percent = ((product.price - product.discounted_price) / product.price * 100) | round %}
+											-{{ discount_percent }}%
+										</span>
+									</div>
+									{% endif %}
 								</div>
 								<div class="grid-text">
 									<p class="primary-grid-heading">{{product.name}}</p>
 									
-									<p class="primary-grid-price-tag">RS{{product.price}}</b>
+									{% if product.has_discount and product.discounted_price > 0 %}
+									<div class="price-container">
+										<p class="original-price">RS {{product.price}}</p>
+										<p class="discounted-price">RS {{product.discounted_price}}</p>
+									</div>
+									{% else %}
+									<p class="primary-grid-price-tag">RS {{product.price}}</p>
+									{% endif %}
 								</div>
 							</div>
 						</a>
@@ -37,6 +52,49 @@
 				<div class="line"></div>
 			</section>
 		</section>
+		
+		<!-- Sale Section for Discounted Products -->
+		{% set discounted_products = products | selectattr('has_discount', 'equalto', true) | selectattr('discounted_price', 'gt', 0) | list %}
+		{% if discounted_products %}
+		<section class="latest">
+			<section class="section-container">
+				<h1 class="primary-heading" style="color: #e74c3c;">
+					🔥 Sale - Limited Time Offers
+				</h1>
+				<div class="grid">
+					{% for product in discounted_products %}
+					
+						<a href="/detail/{{product.id}}">
+							<div class="grid-item sale-item">
+								<div class="grid-img">
+									<img src="{{product.images}}">
+									<div class="discount-badge">
+										<span class="discount-text">
+											{% set discount_percent = ((product.price - product.discounted_price) / product.price * 100) | round %}
+											-{{ discount_percent }}%
+										</span>
+									</div>
+								</div>
+								<div class="grid-text">
+									<p class="primary-grid-heading">{{product.name}}</p>
+									
+									<div class="price-container">
+										<p class="original-price">RS {{product.price}}</p>
+										<p class="discounted-price">RS {{product.discounted_price}}</p>
+									</div>
+									<p class="sale-tag">Limited Time Offer!</p>
+								</div>
+							</div>
+						</a>
+					{% endfor %}
+					
+				</div>
+	
+				<div class="line"></div>
+			</section>
+		</section>
+		{% endif %}
+		
 		<section class="section-container">
 			<div class="elements-box flex-box flex-centered flex-wrap">
 			<div class="element-box-text-area">

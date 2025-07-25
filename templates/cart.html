@@ -18,8 +18,23 @@
                 <tr>
                     <td>{{ item.product.name }}</td>
                     <td>{{ item.qty }}</td>
-                    <td>Rs {{ item.product.price }}</td>
-                    <td>Rs {{ item.product.price * item.qty }}</td>
+                    <td>
+                        {% if item.product.has_discount and item.product.discounted_price > 0 %}
+                        <div class="cart-price-container">
+                            <span class="cart-original-price">Rs {{ item.product.price }}</span>
+                            <span class="cart-discounted-price">Rs {{ item.product.discounted_price }}</span>
+                        </div>
+                        {% else %}
+                        Rs {{ item.product.price }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item.product.has_discount and item.product.discounted_price > 0 %}
+                        Rs {{ item.product.discounted_price * item.qty }}
+                        {% else %}
+                        Rs {{ item.product.price * item.qty }}
+                        {% endif %}
+                    </td>
                     <td>
                         <form method="POST" action="/remove_from_cart" style="display:inline;">
                             <input type="hidden" name="product_id" value="{{ item.product.id }}">

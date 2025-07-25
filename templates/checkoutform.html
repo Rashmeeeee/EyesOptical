@@ -184,11 +184,57 @@
         <div class="checkout-product ms-4 border p-4 ">
             <img src="{{ item.product.images }}" alt="" style="height: 80px; width: auto; object-fit: contain; margin-bottom: 8px;">
             <p class="detail-title ">{{ item.product.name }}</p>
+            
+            {% if item.product.has_discount and item.product.discounted_price > 0 %}
+            <div class="checkout-price-container">
+                <p class="checkout-original-price">RS {{ item.product.price }}</p>
+                <p class="checkout-discounted-price">RS {{ item.product.discounted_price }}</p>
+                <div class="checkout-discount-badge">
+                    {% set discount_percent = ((item.product.price - item.product.discounted_price) / item.product.price * 100) | round %}
+                    <span class="checkout-discount-text">-{{ discount_percent }}% OFF</span>
+                </div>
+            </div>
+            <p>Quantity: {{ item.qty }}</p>
+            <p class="checkout-item-total">Total: RS {{ item.product.discounted_price * item.qty }}</p>
+            {% else %}
             <p class="detail-price">RS {{ item.product.price }}</p>
             <p>Quantity: {{ item.qty }}</p>
-            <p>Total: RS {{ item.product.price * item.qty }}</p>
+            <p class="checkout-item-total">Total: RS {{ item.product.price * item.qty }}</p>
+            {% endif %}
         </div>
     {% endfor %}
+    
+    <!-- Order Summary -->
+    <div class="checkout-summary ms-4 border p-4 mt-3">
+        <h5 class="summary-title">Order Summary</h5>
+        <div class="summary-details">
+            {% set subtotal = 0 %}
+            {% set total_discount = 0 %}
+            {% for item in products %}
+                {% if item.product.has_discount and item.product.discounted_price > 0 %}
+                    {% set subtotal = subtotal + (item.product.price * item.qty) %}
+                    {% set total_discount = total_discount + ((item.product.price - item.product.discounted_price) * item.qty) %}
+                {% else %}
+                    {% set subtotal = subtotal + (item.product.price * item.qty) %}
+                {% endif %}
+            {% endfor %}
+            
+            <div class="summary-row">
+                <span>Subtotal:</span>
+                <span>RS {{ subtotal }}</span>
+            </div>
+            {% if total_discount > 0 %}
+            <div class="summary-row discount-row">
+                <span>Discount:</span>
+                <span class="discount-amount">-RS {{ total_discount }}</span>
+            </div>
+            {% endif %}
+            <div class="summary-row total-row">
+                <span><strong>Total:</strong></span>
+                <span><strong>RS {{ total }}</strong></span>
+            </div>
+        </div>
+    </div>
     </div>
         
 </section>

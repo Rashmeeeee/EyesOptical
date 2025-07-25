@@ -52,3 +52,25 @@ class EmotionDetector:
         except Exception as err:
             print(err)
             return None
+
+if __name__ == "__main__":
+    detector = EmotionDetector()
+    cap = cv2.VideoCapture(0)
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        result = detector.detect(frame)
+        if result:
+            x, y, emotion = result
+            cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.rectangle(frame, (x, y), (x + 48, y + 48), (255, 0, 0), 2)
+
+        cv2.imshow("Emotion Detection", frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()

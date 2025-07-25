@@ -193,7 +193,9 @@
 				<span class="nav-logo"><img src="../static/images/logoo.png"></span>
 			
             
-			<button class="menu-btn"><i class="fa fa-navicon"></i></button>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
 			 <span class="nav-bar-items flex-box justify-content-start">
 				<a href="/home"><span class="nav-item nav-current">Home</span></a>
                 <a href="/about"><span class="nav-item">About Us</span></a>
@@ -219,6 +221,7 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <li><a class="dropdown-item" href="{{ url_for('user_logout') }}">Logout</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('order_history') }}">Order History</a></li>
             </ul>
         </div>
     {% else %}

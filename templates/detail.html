@@ -40,7 +40,20 @@
             
         <div class="line"></div>
         <p class="detail-title">{{product.name}}</p>
+        
+        {% if product.has_discount and product.discounted_price > 0 %}
+        <div class="detail-price-container">
+            <p class="detail-original-price">RS {{product.price}}</p>
+            <p class="detail-discounted-price">RS {{product.discounted_price}}</p>
+            <div class="detail-discount-badge">
+                {% set discount_percent = ((product.price - product.discounted_price) / product.price * 100) | round %}
+                <span class="detail-discount-text">-{{ discount_percent }}% OFF</span>
+            </div>
+        </div>
+        {% else %}
         <p class="detail-price">RS {{product.price}}</p>
+        {% endif %}
+        
         <div class="flex-box detail-actions align-items-center" style="gap: 12px;">
             <!-- Buy Now Button -->
             <a href="{{ url_for('buynow', id=product.id) }}" class="submit-btn margin-right-16" id="buy-now-btn">Buy Now</a>

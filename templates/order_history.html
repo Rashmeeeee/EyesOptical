@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Your Order History</h2>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Product</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Payment Method</th>
+    </tr>
+    {% for order in orders %}
+    <tr>
+        <td>{{ order.id }}</td>
+        <td>{{ order.product }}</td>
+        <td>{{ order.date if order.date else 'N/A' }}</td>
+        <td>{{ order.status if order.status else 'N/A' }}</td>
+        <td>{{ order.payment_method }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% if not orders %}
+<p>You have no orders yet.</p>
+{% endif %}
+{% endblock %}

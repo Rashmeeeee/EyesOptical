@@ -84,6 +84,7 @@ class Product(db.Model):
 
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     firstname = db.Column(db.String(20), nullable=False)
     lastname = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(20), nullable=False)
@@ -212,6 +213,7 @@ def esewa_success():
             product = Product.query.get(pending['product_id'])
             if product:
                 order = Order(
+                    user_id=current_user.id,
                     firstname=pending['firstname'],
                     lastname=pending['lastname'],
                     email=pending['email'],
@@ -246,6 +248,7 @@ def esewa_success():
                 product = Product.query.get(int(pid))
                 if product:
                     order = Order(
+                        user_id=current_user.id,
                         firstname=pending['firstname'],
                         lastname=pending['lastname'],
                         email=pending['email'],
@@ -441,7 +444,11 @@ def checkout():
         product = Product.query.get(int(pid))
         try:
             qty = int(qty)
-            price = int(product.price)
+            # Use discounted price if available, otherwise use regular price
+            if product.has_discount and product.discounted_price > 0:
+                price = int(product.discounted_price)
+            else:
+                price = int(product.price)
         except (ValueError, TypeError):
             to_remove.append(pid)
             continue
@@ -459,6 +466,7 @@ def checkout():
             # Save an order for each product in the cart
             for item in products:
                 order = Order(
+                    user_id=current_user.id,
                     firstname=form.firstname.data,
                     lastname=form.lastname.data,
                     email=form.email.data,
@@ -955,7 +963,11 @@ def cart():
         product = Product.query.get(int(pid))
         try:
             qty = int(qty)
-            price = int(product.price)
+            # Use discounted price if available, otherwise use regular price
+            if product.has_discount and product.discounted_price > 0:
+                price = int(product.discounted_price)
+            else:
+                price = int(product.price)
         except (ValueError, TypeError):
             to_remove.append(pid)  # Mark this product for removal
             continue
@@ -1006,6 +1018,7 @@ def buynow(id):
         if payment_method == 'cod':
             # Save order for this product only
             order = Order(
+                user_id=current_user.id,
                 firstname=form.firstname.data,
                 lastname=form.lastname.data,
                 email=form.email.data,
@@ -1042,7 +1055,7 @@ def buynow(id):
             'city': form.city.data,
             'country': form.country.data,
             'product_id': product.id,
-            'product_price': product.price
+            'product_price': product.discounted_price if product.has_discount and product.discounted_price > 0 else product.price
         }
         print(f"🔍 Pending order stored in session: {session['pending_order']}")
         
@@ -1051,8 +1064,11 @@ def buynow(id):
         secret_key = "8gBm/:&EnhH.1/q"
         product_code = "EPAYTEST"
         
+        # Use discounted price if available
+        payment_amount = product.discounted_price if product.has_discount and product.discounted_price > 0 else product.price
+        
         # Prepare data for signature
-        data_to_sign = f"total_amount={product.price},transaction_uuid={transaction_uuid},product_code={product_code}"
+        data_to_sign = f"total_amount={payment_amount},transaction_uuid={transaction_uuid},product_code={product_code}"
         signature = generate_esewa_signature(secret_key, data_to_sign)
         
         # Create a simple HTML page that auto-submits to eSewa
@@ -1064,9 +1080,9 @@ def buynow(id):
         </head>
         <body>
             <form id="esewaForm" action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST">
-                <input type="hidden" name="amount" value="{product.price}">
+                <input type="hidden" name="amount" value="{payment_amount}">
                 <input type="hidden" name="tax_amount" value="0">
-                <input type="hidden" name="total_amount" value="{product.price}">
+                <input type="hidden" name="total_amount" value="{payment_amount}">
                 <input type="hidden" name="transaction_uuid" value="{transaction_uuid}">
                 <input type="hidden" name="product_code" value="{product_code}">
                 <input type="hidden" name="product_service_charge" value="0">
@@ -1085,7 +1101,9 @@ def buynow(id):
         
         return html_content
     # Pass a single product as a list for template compatibility
-    return render_template("checkoutform.html", form=form, products=[{'product': product, 'qty': 1}], total=product.price)
+    # Use discounted price if available for total calculation
+    total_price = product.discounted_price if product.has_discount and product.discounted_price > 0 else product.price
+    return render_template("checkoutform.html", form=form, products=[{'product': product, 'qty': 1}], total=total_price)
 
 @app.route("/checkout/<int:id>", methods=['GET', 'POST'])
 def checkout_single(id):
@@ -1096,6 +1114,7 @@ def checkout_single(id):
         if payment_method == 'cod':
             # Save order for this product only
             order = Order(
+                user_id=current_user.id,
                 firstname=form.firstname.data,
                 lastname=form.lastname.data,
                 email=form.email.data,
@@ -1132,7 +1151,7 @@ def checkout_single(id):
             'city': form.city.data,
             'country': form.country.data,
             'product_id': product.id,
-            'product_price': product.price
+            'product_price': product.discounted_price if product.has_discount and product.discounted_price > 0 else product.price
         }
         
         # Generate eSewa payment data and redirect directly to eSewa
@@ -1140,8 +1159,11 @@ def checkout_single(id):
         secret_key = "8gBm/:&EnhH.1/q"
         product_code = "EPAYTEST"
         
+        # Use discounted price if available
+        payment_amount = product.discounted_price if product.has_discount and product.discounted_price > 0 else product.price
+        
         # Prepare data for signature
-        data_to_sign = f"total_amount={product.price},transaction_uuid={transaction_uuid},product_code={product_code}"
+        data_to_sign = f"total_amount={payment_amount},transaction_uuid={transaction_uuid},product_code={product_code}"
         signature = generate_esewa_signature(secret_key, data_to_sign)
         
         # Create a simple HTML page that auto-submits to eSewa
@@ -1153,9 +1175,9 @@ def checkout_single(id):
         </head>
         <body>
             <form id="esewaForm" action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST">
-                <input type="hidden" name="amount" value="{product.price}">
+                <input type="hidden" name="amount" value="{payment_amount}">
                 <input type="hidden" name="tax_amount" value="0">
-                <input type="hidden" name="total_amount" value="{product.price}">
+                <input type="hidden" name="total_amount" value="{payment_amount}">
                 <input type="hidden" name="transaction_uuid" value="{transaction_uuid}">
                 <input type="hidden" name="product_code" value="{product_code}">
                 <input type="hidden" name="product_service_charge" value="0">
@@ -1174,7 +1196,9 @@ def checkout_single(id):
         
         return html_content
     # Pass a single product as a list for template compatibility
-    return render_template("checkoutform.html", form=form, products=[{'product': product, 'qty': 1}], total=product.price)
+    # Use discounted price if available for total calculation
+    total_price = product.discounted_price if product.has_discount and product.discounted_price > 0 else product.price
+    return render_template("checkoutform.html", form=form, products=[{'product': product, 'qty': 1}], total=total_price)
 
 
 @app.route('/get_esewa_signature')
@@ -1206,6 +1230,12 @@ def get_esewa_signature():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/order-history')
+@login_required
+def order_history():
+    orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.id.desc()).all()
+    return render_template('order_history.html', orders=orders)
 
 if __name__ == "__main__":
     app.run(debug=True)
