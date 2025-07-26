@@ -220,8 +220,8 @@
                 {{ current_user.firstname }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                <li><a class="dropdown-item" href="{{ url_for('user_logout') }}">Logout</a></li>
                 <li><a class="dropdown-item" href="{{ url_for('order_history') }}">Order History</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('user_logout') }}">Logout</a></li>
             </ul>
         </div>
     {% else %}

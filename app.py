@@ -84,7 +84,6 @@ class Product(db.Model):
 
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     firstname = db.Column(db.String(20), nullable=False)
     lastname = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(20), nullable=False)
@@ -92,8 +91,7 @@ class Order(db.Model):
     streetaddress = db.Column(db.String(40), nullable=False)
     city = db.Column(db.String(20), nullable=False)
     country = db.Column(db.String(20), nullable=False)
-    product = db.Column(db.Integer, db.ForeignKey(
-        'product.id'), nullable=False)
+    product = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
     payment_method = db.Column(db.String(20), nullable=False)
 
     def __repr__(self):
@@ -213,7 +211,6 @@ def esewa_success():
             product = Product.query.get(pending['product_id'])
             if product:
                 order = Order(
-                    user_id=current_user.id,
                     firstname=pending['firstname'],
                     lastname=pending['lastname'],
                     email=pending['email'],
@@ -248,7 +245,6 @@ def esewa_success():
                 product = Product.query.get(int(pid))
                 if product:
                     order = Order(
-                        user_id=current_user.id,
                         firstname=pending['firstname'],
                         lastname=pending['lastname'],
                         email=pending['email'],
@@ -303,7 +299,13 @@ def login():
             
             user = User.query.filter_by(email=email).first()
             if user and check_password_hash(user.password, password):
+                # Check if user is admin - prevent admin login through customer interface
+                if user.isSuperAdmin:
+                    return jsonify({'success': False, 'message': 'Admin users must use the admin login portal.'})
+                
                 login_user(user, remember=True)
+                # Clear admin session flag for customer login
+                session.pop('admin_login', None)
                 
                 # Restore user's cart from database to session
                 cart_items = CartItem.query.filter_by(user_id=user.id).all()
@@ -324,7 +326,14 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and check_password_hash(user.password, form.password.data):
+            # Check if user is admin - prevent admin login through customer interface
+            if user.isSuperAdmin:
+                flash('Admin users must use the admin login portal.', 'danger')
+                return render_template('login.html', form=form, next=next_page)
+            
             login_user(user, remember=True)
+            # Clear admin session flag for customer login
+            session.pop('admin_login', None)
             
             # Restore user's cart from database to session
             cart_items = CartItem.query.filter_by(user_id=user.id).all()
@@ -355,6 +364,9 @@ def about():
 @app.route("/submit_feedback", methods=['POST'])
 @login_required
 def submit_feedback():
+    # Prevent admin users from submitting feedback as customers
+    if current_user.isSuperAdmin and session.get('admin_login'):
+        return jsonify({'success': False, 'message': 'Admin users cannot submit customer feedback.'}), 403
     try:
         data = request.get_json()
         
@@ -414,12 +426,21 @@ def signup():
 
 @app.route("/")
 def index():
+    # Prevent admin users logged in through admin portal from accessing customer interface
+    if current_user.is_authenticated and current_user.isSuperAdmin and session.get('admin_login'):
+        flash('You are logged in as admin. Please use the admin interface.', 'warning')
+        return redirect(url_for('adminViewProducts'))
+
     newproducts = Product.query.all()
     return render_template("index.html", products=newproducts)
 
 
 @app.route("/home")
 def home():
+    # Prevent admin users logged in through admin portal from accessing customer interface
+    if current_user.is_authenticated and current_user.isSuperAdmin and session.get('admin_login'):
+        flash('You are logged in as admin. Please use the admin interface.', 'warning')
+        return redirect(url_for('adminViewProducts'))
 
     newproducts = Product.query.all()
     return render_template("index.html", products=newproducts)
@@ -427,6 +448,11 @@ def home():
 
 @app.route("/detail/<int:id>")
 def detail(id):
+    # Prevent admin users logged in through admin portal from accessing customer interface
+    if current_user.is_authenticated and current_user.isSuperAdmin and session.get('admin_login'):
+        flash('You are logged in as admin. Please use the admin interface.', 'warning')
+        return redirect(url_for('adminViewProducts'))
+
     product = db.session.query(Product).get(id)
     print(product)
     return render_template("detail.html", product=product)
@@ -436,6 +462,10 @@ def detail(id):
 @app.route("/checkout", methods=['GET', 'POST'])
 @login_required
 def checkout():
+    # Prevent admin users from accessing customer checkout
+    if current_user.isSuperAdmin and session.get('admin_login'):
+        flash('Admin users cannot access customer checkout.', 'danger')
+        return redirect(url_for('adminViewProducts'))
     cart = get_cart()
     products = []
     total = 0
@@ -466,7 +496,6 @@ def checkout():
             # Save an order for each product in the cart
             for item in products:
                 order = Order(
-                    user_id=current_user.id,
                     firstname=form.firstname.data,
                     lastname=form.lastname.data,
                     email=form.email.data,
@@ -780,6 +809,8 @@ def adminlogin():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             if user.isSuperAdmin:
                 login_user(user, remember=True)
+                # Set session flag to indicate admin login
+                session['admin_login'] = True
                 return redirect(url_for('adminViewProducts'))
             else:
                 flash('You do not have admin privileges.', category="danger")
@@ -792,6 +823,8 @@ def adminlogin():
 @app.route("/admin_logout")
 def admin_logout():
     logout_user()
+    # Clear admin session flag
+    session.pop('admin_login', None)
     return redirect(url_for('adminlogin'))
 
 
@@ -800,6 +833,8 @@ def admin_logout():
 def user_logout():
     # Clear session cart only (keep database cart for user)
     session.pop('cart', None)
+    # Clear admin session flag
+    session.pop('admin_login', None)
     
     logout_user()
     print("User logged out.")
@@ -892,6 +927,9 @@ def get_cart_count():
 @app.route('/add_to_cart', methods=['POST'])
 @login_required
 def add_to_cart():
+    # Prevent admin users from adding items to cart
+    if current_user.isSuperAdmin and session.get('admin_login'):
+        return jsonify({'success': False, 'message': 'Admin users cannot add items to cart.'}), 403
     product_id = request.form.get('product_id')
     quantity = request.form.get('quantity', 1)
     try:
@@ -954,6 +992,10 @@ def add_to_cart():
 
 @app.route('/cart', methods=['GET', 'POST'])
 def cart():
+    # Prevent admin users from accessing customer cart
+    if current_user.is_authenticated and current_user.isSuperAdmin and session.get('admin_login'):
+        flash('Admin users cannot access customer cart.', 'danger')
+        return redirect(url_for('adminViewProducts'))
     cart = get_cart()
     products = []
     total = 0
@@ -986,6 +1028,10 @@ def cart():
 
 @app.route('/remove_from_cart', methods=['POST'])
 def remove_from_cart():
+    # Prevent admin users from removing items from customer cart
+    if current_user.is_authenticated and current_user.isSuperAdmin and session.get('admin_login'):
+        flash('Admin users cannot modify customer cart.', 'danger')
+        return redirect(url_for('adminViewProducts'))
     product_id = request.form.get('product_id')
     
     # Always remove from session cart
@@ -1011,6 +1057,10 @@ def remove_from_cart():
 @app.route('/buynow/<int:id>', methods=['GET', 'POST'])
 @login_required
 def buynow(id):
+    # Prevent admin users from using buy now functionality
+    if current_user.isSuperAdmin and session.get('admin_login'):
+        flash('Admin users cannot use customer purchase functionality.', 'danger')
+        return redirect(url_for('adminViewProducts'))
     product = Product.query.get_or_404(id)
     form = CheckoutForm()
     if form.validate_on_submit():
@@ -1018,7 +1068,6 @@ def buynow(id):
         if payment_method == 'cod':
             # Save order for this product only
             order = Order(
-                user_id=current_user.id,
                 firstname=form.firstname.data,
                 lastname=form.lastname.data,
                 email=form.email.data,
@@ -1107,6 +1156,10 @@ def buynow(id):
 
 @app.route("/checkout/<int:id>", methods=['GET', 'POST'])
 def checkout_single(id):
+    # Prevent admin users from accessing customer checkout
+    if current_user.is_authenticated and current_user.isSuperAdmin and session.get('admin_login'):
+        flash('Admin users cannot access customer checkout.', 'danger')
+        return redirect(url_for('adminViewProducts'))
     product = Product.query.get_or_404(id)
     form = CheckoutForm()
     if form.validate_on_submit():
@@ -1114,7 +1167,6 @@ def checkout_single(id):
         if payment_method == 'cod':
             # Save order for this product only
             order = Order(
-                user_id=current_user.id,
                 firstname=form.firstname.data,
                 lastname=form.lastname.data,
                 email=form.email.data,
@@ -1234,8 +1286,46 @@ def get_esewa_signature():
 @app.route('/order-history')
 @login_required
 def order_history():
-    orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.id.desc()).all()
-    return render_template('order_history.html', orders=orders)
+    # Prevent admin users from accessing customer order history
+    if current_user.isSuperAdmin and session.get('admin_login'):
+        flash('Admin users cannot access customer order history.', 'danger')
+        return redirect(url_for('adminViewProducts'))
+    
+    orders = Order.query.filter_by(email=current_user.email).order_by(Order.id.desc()).all()
+    
+    # Fetch product data for each order
+    orders_with_products = []
+    for order in orders:
+        product = Product.query.get(order.product)
+        orders_with_products.append({
+            'order': order,
+            'product': product
+        })
+    
+    return render_template('order_history.html', orders_with_products=orders_with_products)
+
+@app.route('/delete_user_order/<int:id>', methods=['DELETE'])
+@login_required
+def delete_user_order(id):
+    # Prevent admin users from deleting customer orders through this route
+    if current_user.isSuperAdmin and session.get('admin_login'):
+        return jsonify({'success': False, 'message': 'Admin users cannot delete customer orders through this interface.'}), 403
+    try:
+        # Find the order and verify it belongs to the current user
+        order = Order.query.filter_by(id=id, email=current_user.email).first()
+        
+        if not order:
+            return jsonify({'success': False, 'message': 'Order not found or access denied'}), 404
+        
+        # Delete the order
+        db.session.delete(order)
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'Order deleted successfully'})
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': 'An error occurred while deleting the order'}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
